@@ -9,10 +9,9 @@ interface SwatchProps {
   label: string
   value: string
   token?: string
-  dark?: boolean
 }
 
-function Swatch({ label, value, token, dark }: SwatchProps) {
+function Swatch({ label, value, token }: SwatchProps) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 72 }}>
       <div

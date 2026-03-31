@@ -6,7 +6,7 @@ import { system } from "./theme"
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ChakraProvider value={system}>
-      {/* App entry point — use Storybook for component development */}
+      {null}
     </ChakraProvider>
   </StrictMode>
 )
