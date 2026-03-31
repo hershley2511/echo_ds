@@ -4,7 +4,7 @@ import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 export type AvatarSize = "md" | "sm" | "xs" | "2xs"
 export type AvatarColour = "strong" | "neutral" | "subtle" | "mix" | "purple" | "green" | "mocha" | "blue"
 export type AvatarType = "letter" | "icon"
-export type AvatarState = "default" | "hover" | "active" | "alert" | "focus"
+export type AvatarState = "default" | "alert"
 
 export interface AvatarProps extends HTMLChakraProps<"div"> {
   type?: AvatarType
@@ -19,9 +19,9 @@ export interface AvatarProps extends HTMLChakraProps<"div"> {
 
 // Size → { diameter, dropdownSize, fontSize, lineHeight }
 const sizes: Record<AvatarSize, { d: string; arrow: string; fs: string; lh: string }> = {
-  md:  { d: "40px", arrow: "24px", fs: "14px", lh: "16px" },
-  sm:  { d: "36px", arrow: "20px", fs: "12px", lh: "16px" },
-  xs:  { d: "32px", arrow: "20px", fs: "12px", lh: "16px" },
+  md:    { d: "40px", arrow: "24px", fs: "14px", lh: "16px" },
+  sm:    { d: "36px", arrow: "20px", fs: "12px", lh: "16px" },
+  xs:    { d: "32px", arrow: "20px", fs: "12px", lh: "16px" },
   "2xs": { d: "20px", arrow: "12px", fs: "10px", lh: "12px" },
 }
 
@@ -61,13 +61,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
 ) {
   const { d, arrow, fs, lh } = sizes[size]
   const { bg, bgHover, bgActive, textColor } = colours[colour]
-
-  const isHover = state === "hover"
-  const isActive = state === "active"
   const isAlert = state === "alert"
-  const isFocus = state === "focus"
-
-  const bgColor = isActive ? bgActive : isHover ? bgHover : bg
 
   const letters = getInitials(initials, name)
 
@@ -79,20 +73,26 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
       alignItems="center"
       justifyContent="center"
       position="relative"
-      cursor={isHover || isActive ? "pointer" : undefined}
+      cursor="pointer"
       fontFamily="Inter, sans-serif"
+      _focusVisible={{
+        outline: "none",
+        "& > div": {
+          borderColor: "#DDFBC6",
+          boxShadow: "0 0 0 2px #009D7B",
+        },
+      }}
+      tabIndex={dropdown ? 0 : undefined}
       {...rest}
     >
-      {/* Initial / Icon circle */}
+      {/* Ring wrapper — shows focus ring */}
       <chakra.div
         position="relative"
         display="inline-flex"
         alignItems="center"
         justifyContent="center"
         borderRadius="50px"
-        border="2px solid"
-        borderColor={isFocus ? "#DDFBC6" : "transparent"}
-        boxShadow={isFocus ? "0 0 0 2px #009D7B" : undefined}
+        border="2px solid transparent"
         flexShrink={0}
       >
         {/* Background circle */}
@@ -100,13 +100,15 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
           w={d}
           h={d}
           borderRadius="full"
-          bg={bgColor}
+          bg={bg}
           display="flex"
           alignItems="center"
           justifyContent="center"
           position="relative"
           overflow="hidden"
           transition="background 0.15s"
+          _hover={{ bg: bgHover }}
+          _active={{ bg: bgActive }}
         >
           {type === "letter" && (
             <chakra.span
@@ -161,7 +163,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
           display="flex"
           alignItems="center"
           justifyContent="center"
-          color={colour === "subtle" ? "#424559" : "#424559"}
+          color="#424559"
           flexShrink={0}
         >
           <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none">

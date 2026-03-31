@@ -9,7 +9,7 @@ const meta: Meta<typeof Link> = {
   argTypes: {
     colour: { control: "select", options: ["Link", "Neutral"] },
     size: { control: "select", options: ["md", "sm", "xs"] },
-    state: { control: "select", options: ["Default", "Hover", "Disabled", "Focus"] },
+    state: { control: "select", options: ["Default", "Disabled"] },
     iconPosition: { control: "select", options: ["None", "Left", "Right"] },
   },
 }
@@ -18,7 +18,7 @@ export default meta
 type Story = StoryObj<typeof Link>
 
 export const Playground: Story = {
-  args: { children: "Click here", colour: "Link", size: "md", state: "Default", iconPosition: "None", href: "#" },
+  args: { children: "Click here", colour: "Link", size: "md", iconPosition: "None", href: "#" },
 }
 
 export const Colours: Story = {
@@ -29,12 +29,15 @@ export const Colours: Story = {
         <div key={colour} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.5px" }}>{colour}</span>
           <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-            {(["Default", "Hover", "Focus", "Disabled"] as const).map((state) => (
+            {(["Default", "Disabled"] as const).map((state) => (
               <div key={state} style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start" }}>
                 <Link href="#" colour={colour} size="md" state={state}>{state}</Link>
                 <span style={{ fontSize: 10, color: "#9A9FB8" }}>{state}</span>
               </div>
             ))}
+          </div>
+          <div style={{ fontSize: 11, color: "#9A9FB8" }}>
+            Hover and focus states are applied via CSS pseudo-classes — interact with the links above.
           </div>
         </div>
       ))}

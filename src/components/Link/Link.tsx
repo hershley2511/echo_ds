@@ -3,7 +3,7 @@ import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
 export type LinkColour = "Link" | "Neutral"
 export type LinkSize = "md" | "sm" | "xs"
-export type LinkState = "Default" | "Hover" | "Disabled" | "Focus"
+export type LinkState = "Default" | "Disabled"
 export type LinkIconPosition = "Left" | "Right" | "None"
 
 export interface LinkProps extends HTMLChakraProps<"a"> {
@@ -21,19 +21,9 @@ const sizeTokens: Record<LinkSize, { fontSize: string; lineHeight: string; iconS
   xs: { fontSize: "12px", lineHeight: "16px", iconSize: "16px", letterSpacing: "0px" },
 }
 
-const colorTokens: Record<LinkColour, Record<LinkState, { color: string; textDecoration?: string; outline?: string }>> = {
-  Link: {
-    Default:  { color: "#009D7B" },
-    Hover:    { color: "#017B68", textDecoration: "underline" },
-    Disabled: { color: "#A0A4AD" },
-    Focus:    { color: "#009D7B", outline: "2px solid #009D7B" },
-  },
-  Neutral: {
-    Default:  { color: "#575B73" },
-    Hover:    { color: "#1F2233", textDecoration: "underline" },
-    Disabled: { color: "#A0A4AD" },
-    Focus:    { color: "#575B73", outline: "2px solid #009D7B" },
-  },
+const colorTokens: Record<LinkColour, { default: string; hover: string; disabled: string }> = {
+  Link:    { default: "#009D7B", hover: "#017B68", disabled: "#A0A4AD" },
+  Neutral: { default: "#575B73", hover: "#1F2233", disabled: "#A0A4AD" },
 }
 
 const DefaultArrowIcon = ({ size }: { size: string }) => (
@@ -56,9 +46,8 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
   ref
 ) {
   const { fontSize, lineHeight, iconSize, letterSpacing } = sizeTokens[size]
-  const { color, textDecoration, outline } = colorTokens[colour][state]
+  const { default: defaultColor, hover: hoverColor, disabled: disabledColor } = colorTokens[colour]
   const isDisabled = state === "Disabled"
-  const isFocus = state === "Focus"
 
   const iconEl = (
     <chakra.span
@@ -79,23 +68,24 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
       display="inline-flex"
       alignItems="center"
       gap={iconPosition !== "None" ? "4px" : undefined}
-      color={color}
+      color={isDisabled ? disabledColor : defaultColor}
       fontSize={fontSize}
       fontWeight="500"
       lineHeight={lineHeight}
       letterSpacing={letterSpacing}
       fontFamily="Inter, sans-serif"
-      textDecoration={textDecoration ?? "none"}
-      textDecorationSkipInk={textDecoration ? "none" : undefined}
-      outline={isFocus ? outline : undefined}
-      outlineOffset={isFocus ? "4px" : undefined}
-      borderRadius={isFocus ? "4px" : undefined}
+      textDecoration="none"
       cursor={isDisabled ? "not-allowed" : "pointer"}
       pointerEvents={isDisabled ? "none" : undefined}
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
       style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1" }}
-      _hover={!isDisabled ? { color: colorTokens[colour].Hover.color, textDecoration: "underline" } : {}}
+      _hover={!isDisabled ? { color: hoverColor, textDecoration: "underline", textDecorationSkipInk: "none" } : undefined}
+      _focusVisible={!isDisabled ? {
+        outline: "2px solid #009D7B",
+        outlineOffset: "4px",
+        borderRadius: "4px",
+      } : undefined}
       {...rest}
     >
       {iconPosition === "Left" && iconEl}

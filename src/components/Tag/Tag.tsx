@@ -5,7 +5,7 @@ export type TagVariant = "Subtle" | "Outline" | "Strong"
 export type TagColour = "Brand" | "Teal" | "Lime" | "Cyan" | "Orange" | "Purple" | "Red" | "Pink" | "Gray" | "White"
 export type TagSize = "md" | "sm" | "xs"
 export type TagBorder = "Default" | "Rounded"
-export type TagState = "Default" | "Hover" | "Active" | "Focus" | "Disabled"
+export type TagState = "Default" | "Disabled"
 
 export interface TagProps extends HTMLChakraProps<"span"> {
   variant?: TagVariant
@@ -70,12 +70,6 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
     borderColor = strong.bg
   }
 
-  // Hover / Active state bg shift (slightly darker)
-  if (!isDisabled && variant !== "Strong") {
-    if (state === "Hover")  bg = bg // could darken slightly, keep as-is for now
-    if (state === "Active") bg = bg
-  }
-
   return (
     <chakra.span
       ref={ref}
@@ -94,12 +88,16 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
       borderRadius={borderRadius}
       border={borderColor ? "1px solid" : undefined}
       borderColor={borderColor}
-      boxShadow={state === "Focus" ? `0 0 0 2px #DDFBC6` : undefined}
-      outline={state === "Focus" ? `2px solid #009D7B` : undefined}
-      outlineOffset={state === "Focus" ? "1px" : undefined}
       opacity={isDisabled ? 0.4 : 1}
       cursor={isDisabled ? "not-allowed" : "default"}
       whiteSpace="nowrap"
+      _hover={!isDisabled ? { filter: "brightness(0.94)" } : undefined}
+      _active={!isDisabled ? { filter: "brightness(0.88)" } : undefined}
+      _focusVisible={!isDisabled ? {
+        boxShadow: "0 0 0 2px #DDFBC6",
+        outline: "2px solid #009D7B",
+        outlineOffset: "1px",
+      } : undefined}
       {...rest}
     >
       {children}

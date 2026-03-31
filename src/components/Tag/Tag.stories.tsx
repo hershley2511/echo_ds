@@ -12,7 +12,7 @@ const meta: Meta<typeof Tag> = {
     colour: { control: "select", options: ["Brand", "Teal", "Lime", "Cyan", "Orange", "Purple", "Red", "Pink", "Gray", "White"] },
     size: { control: "select", options: ["md", "sm", "xs"] },
     border: { control: "select", options: ["Default", "Rounded"] },
-    state: { control: "select", options: ["Default", "Hover", "Active", "Focus", "Disabled"] },
+    state: { control: "select", options: ["Default", "Disabled"] },
   },
 }
 
@@ -71,7 +71,7 @@ export const BorderStyles: Story = {
 export const States: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 10, fontFamily: "Inter, sans-serif" }}>
-      {(["Default", "Hover", "Active", "Focus", "Disabled"] as const).map((state) => (
+      {(["Default", "Disabled"] as const).map((state) => (
         <div key={state} style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ width: 56, fontSize: 11, color: "#7C8094" }}>{state}</span>
           <Tag colour="Brand" state={state}>Label</Tag>
@@ -79,6 +79,9 @@ export const States: Story = {
           <Tag colour="Red" variant="Strong" state={state}>Label</Tag>
         </div>
       ))}
+      <div style={{ fontSize: 11, color: "#9A9FB8", marginTop: 4 }}>
+        Hover and focus states are applied via CSS pseudo-classes — interact with the tags above.
+      </div>
     </div>
   ),
 }

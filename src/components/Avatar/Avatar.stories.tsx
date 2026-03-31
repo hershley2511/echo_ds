@@ -14,7 +14,7 @@ const meta: Meta<typeof Avatar> = {
     },
     size: { control: "select", options: ["md", "sm", "xs", "2xs"] },
     type: { control: "select", options: ["letter", "icon"] },
-    state: { control: "select", options: ["default", "hover", "active", "alert", "focus"] },
+    state: { control: "select", options: ["default", "alert"] },
   },
 }
 
@@ -64,13 +64,18 @@ export const Sizes: Story = {
 // All interaction states
 export const States: Story = {
   render: () => (
-    <div style={{ display: "flex", gap: 24, alignItems: "flex-end", fontFamily: "Inter, sans-serif" }}>
-      {(["default", "hover", "active", "alert", "focus"] as const).map((s) => (
-        <div key={s} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-          <Avatar initials="JD" state={s} colour="strong" size="md" />
-          <span style={{ fontSize: 11, color: "#7C8094" }}>{s}</span>
-        </div>
-      ))}
+    <div style={{ display: "flex", flexDirection: "column", gap: 16, fontFamily: "Inter, sans-serif" }}>
+      <div style={{ display: "flex", gap: 24, alignItems: "flex-end" }}>
+        {(["default", "alert"] as const).map((s) => (
+          <div key={s} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+            <Avatar initials="JD" state={s} colour="strong" size="md" />
+            <span style={{ fontSize: 11, color: "#7C8094" }}>{s}</span>
+          </div>
+        ))}
+      </div>
+      <span style={{ fontSize: 11, color: "#9A9FB8" }}>
+        Hover and focus states are applied via CSS pseudo-classes — interact with the avatars above.
+      </span>
     </div>
   ),
 }
@@ -112,7 +117,7 @@ export const Matrix: Story = {
   name: "Size × State Matrix",
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 20, fontFamily: "Inter, sans-serif" }}>
-      {(["default", "hover", "active", "alert", "focus"] as const).map((s) => (
+      {(["default", "alert"] as const).map((s) => (
         <div key={s} style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <span style={{ width: 56, fontSize: 11, color: "#7C8094", textAlign: "right" }}>{s}</span>
           {(["md", "sm", "xs", "2xs"] as const).map((sz) => (
