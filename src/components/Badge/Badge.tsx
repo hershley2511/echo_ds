@@ -1,73 +1,156 @@
 import { forwardRef } from "react"
 import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
-export type BadgeVariant = "solid" | "subtle" | "outline"
-export type BadgeColorScheme = "brand" | "success" | "critical" | "warning" | "info" | "neutral"
+export type BadgeVariant = "Strong" | "Subtle" | "Outline" | "Mixed"
+export type BadgeColour = "Brand" | "Success" | "Warning" | "Critical" | "Neutral" | "Info"
+export type BadgeSize = "sm" | "xs"
+export type BadgeBorder = "Default" | "Rounded"
 
 export interface BadgeProps extends HTMLChakraProps<"span"> {
   variant?: BadgeVariant
-  colorScheme?: BadgeColorScheme
-  size?: "sm" | "md"
+  colour?: BadgeColour
+  size?: BadgeSize
+  border?: BadgeBorder
+  /** No pill background — renders a dot + label (status indicator style) */
+  background?: boolean
+  showLeadingIcon?: boolean
+  showTrailingIcon?: boolean
+  leadingIcon?: React.ReactNode
+  trailingIcon?: React.ReactNode
 }
 
-const schemes: Record<BadgeColorScheme, Record<BadgeVariant, object>> = {
-  brand: {
-    solid: { bg: "green.800", color: "white", borderColor: "green.800" },
-    subtle: { bg: "green.50", color: "green.800", borderColor: "green.50" },
-    outline: { bg: "transparent", color: "green.800", borderColor: "green.800" },
+// bg / text / borderColor per variant × colour
+const styles: Record<BadgeVariant, Record<BadgeColour, { bg: string; text: string; border?: string }>> = {
+  Strong: {
+    Brand:    { bg: "#026257", text: "#F6F7FF" },
+    Success:  { bg: "#009D7B", text: "#F6F7FF" },
+    Info:     { bg: "#3182CE", text: "#F6F7FF" },
+    Warning:  { bg: "#FFDA68", text: "#8B6005" },
+    Critical: { bg: "#C84F25", text: "#F6F7FF" },
+    Neutral:  { bg: "#6B6F8C", text: "#F6F7FF" },
   },
-  success: {
-    solid: { bg: "green.500", color: "white", borderColor: "green.500" },
-    subtle: { bg: "green.50", color: "green.500", borderColor: "green.50" },
-    outline: { bg: "transparent", color: "green.500", borderColor: "green.500" },
+  Subtle: {
+    Brand:    { bg: "#DDFBC6", text: "#014039" },
+    Success:  { bg: "#F1FFE5", text: "#017B68" },
+    Info:     { bg: "#EBF8FF", text: "#2B6CB0" },
+    Warning:  { bg: "#FFEFA1", text: "#8B6005" },
+    Critical: { bg: "#FFE8E0", text: "#A64929" },
+    Neutral:  { bg: "#F0F1F9", text: "#424559" },
   },
-  critical: {
-    solid: { bg: "red.500", color: "white", borderColor: "red.500" },
-    subtle: { bg: "#FFE8E0", color: "red.500", borderColor: "#FFE8E0" },
-    outline: { bg: "transparent", color: "red.500", borderColor: "red.500" },
+  Outline: {
+    Brand:    { bg: "#DDFBC6", text: "#014039", border: "#014039" },
+    Success:  { bg: "#F1FFE5", text: "#017B68", border: "#009D7B" },
+    Info:     { bg: "#EBF8FF", text: "#2B6CB0", border: "#3182CE" },
+    Warning:  { bg: "#FFEFA1", text: "#8B6005", border: "#8B6005" },
+    Critical: { bg: "#FFE8E0", text: "#A64929", border: "#C84F25" },
+    Neutral:  { bg: "#F0F1F9", text: "#424559", border: "#424559" },
   },
-  warning: {
-    solid: { bg: "#FFDA68", color: "#8B6005", borderColor: "#FFDA68" },
-    subtle: { bg: "#FFFAE2", color: "#8B6005", borderColor: "#FFFAE2" },
-    outline: { bg: "transparent", color: "#8B6005", borderColor: "#FFDA68" },
-  },
-  info: {
-    solid: { bg: "#3182CE", color: "white", borderColor: "#3182CE" },
-    subtle: { bg: "#EBF8FF", color: "#2B6CB0", borderColor: "#EBF8FF" },
-    outline: { bg: "transparent", color: "#2B6CB0", borderColor: "#3182CE" },
-  },
-  neutral: {
-    solid: { bg: "slate.800", color: "white", borderColor: "slate.800" },
-    subtle: { bg: "slate.100", color: "slate.800", borderColor: "slate.100" },
-    outline: { bg: "transparent", color: "slate.700", borderColor: "grey.100" },
+  Mixed: {
+    Brand:    { bg: "#F0F1F9", text: "#017B68" },
+    Success:  { bg: "#F0F1F9", text: "#017B68" },
+    Info:     { bg: "#F0F1F9", text: "#2B6CB0" },
+    Warning:  { bg: "#F0F1F9", text: "#8B6005" },
+    Critical: { bg: "#F0F1F9", text: "#A64929" },
+    Neutral:  { bg: "#F0F1F9", text: "#017B68" },
   },
 }
 
-const sizes = {
-  sm: { px: "6px", py: "1px", fontSize: "11px", borderRadius: "4px" },
-  md: { px: "8px", py: "2px", fontSize: "12px", borderRadius: "6px" },
+// Dot color for background=false (status indicator) variant
+const dotColors: Record<BadgeColour, string> = {
+  Brand:    "#026257",
+  Success:  "#009D7B",
+  Info:     "#3182CE",
+  Warning:  "#FFDA68",
+  Critical: "#C84F25",
+  Neutral:  "#6B6F8C",
+}
+
+const sizeStyles = {
+  sm: { px: "8px", py: "4px", fontSize: "12px", fontWeight: "500", lineHeight: "16px", iconSize: "16px" },
+  xs: { px: "8px", py: "4px", fontSize: "10px", fontWeight: "400", lineHeight: "12px", iconSize: "12px" },
 }
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
-  { variant = "subtle", colorScheme = "neutral", size = "md", children, ...rest },
+  {
+    variant = "Subtle",
+    colour = "Neutral",
+    size = "sm",
+    border = "Default",
+    background = true,
+    showLeadingIcon = false,
+    showTrailingIcon = false,
+    leadingIcon,
+    trailingIcon,
+    children,
+    ...rest
+  },
   ref
 ) {
+  const { px, py, fontSize, fontWeight, lineHeight, iconSize } = sizeStyles[size]
+  const borderRadius = border === "Rounded" ? "999px" : "8px"
+
+  // No-background / status indicator style
+  if (!background) {
+    return (
+      <chakra.span
+        ref={ref}
+        display="inline-flex"
+        alignItems="center"
+        gap="8px"
+        fontFamily="Inter, sans-serif"
+        fontSize="14px"
+        fontWeight="400"
+        lineHeight="20px"
+        color="#454953"
+        style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1" }}
+        {...rest}
+      >
+        <chakra.span
+          display="inline-block"
+          w="8px"
+          h="8px"
+          borderRadius="full"
+          bg={dotColors[colour]}
+          flexShrink={0}
+        />
+        {children}
+      </chakra.span>
+    )
+  }
+
+  const { bg, text, border: borderColor } = styles[variant][colour]
+
   return (
     <chakra.span
       ref={ref}
       display="inline-flex"
       alignItems="center"
-      fontWeight="600"
-      border="1px solid"
+      gap="4px"
+      px={px}
+      py={py}
+      bg={bg}
+      color={text}
+      fontSize={fontSize}
+      fontWeight={fontWeight}
+      lineHeight={lineHeight}
       fontFamily="Inter, sans-serif"
-      letterSpacing="0.2px"
-      lineHeight="1"
-      whiteSpace="nowrap"
-      {...sizes[size]}
-      {...schemes[colorScheme][variant]}
+      borderRadius={borderRadius}
+      border={borderColor ? "1px solid" : undefined}
+      borderColor={borderColor}
+      style={{ fontFeatureSettings: size === "sm" ? "'cv05' 1, 'cv10' 1, 'lnum' 1, 'tnum' 1" : "'cv05' 1, 'cv10' 1" }}
       {...rest}
     >
+      {showLeadingIcon && leadingIcon && (
+        <chakra.span display="inline-flex" w={iconSize} h={iconSize} alignItems="center" justifyContent="center">
+          {leadingIcon}
+        </chakra.span>
+      )}
       {children}
+      {showTrailingIcon && trailingIcon && (
+        <chakra.span display="inline-flex" w={iconSize} h={iconSize} alignItems="center" justifyContent="center">
+          {trailingIcon}
+        </chakra.span>
+      )}
     </chakra.span>
   )
 })
