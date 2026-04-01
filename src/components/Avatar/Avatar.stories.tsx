@@ -15,9 +15,9 @@ const meta: Meta<typeof Avatar> = {
     type:  { control: "select", options: ["letter", "icon"] },
     state: {
       control: "select",
-      options: ["default", "alert", "disabled"],
+      options: ["default", "alert", "disabled", "focus"],
       description:
-        "Static visual state. Hover / active / focus are CSS-driven — interact with the canvas to see them.",
+        "Visual state. default / alert / disabled are semantic props. focus forces the focus ring (for preview — in canvas, tab to the avatar to trigger it naturally).",
     },
   },
 }
@@ -104,10 +104,10 @@ export const InteractionStates: Story = {
   name: "Interaction States",
   render: () => {
     const interactionStates = [
-      { label: "default",      props: {} },
-      { label: "hover",        props: { "data-hover": true } },
-      { label: "active",       props: { "data-active": true } },
-      { label: "focus",        props: { "data-focus-visible": true, tabIndex: 0 } },
+      { label: "default", props: {} },
+      { label: "hover",   props: { "data-hover": true } },
+      { label: "active",  props: { "data-active": true } },
+      { label: "focus",   props: { state: "focus" as const } },
     ] as const
 
     const colours = ["strong", "neutral", "subtle", "mix"] as const
@@ -217,7 +217,7 @@ export const WithRemixIcons: Story = {
               { label: "default", props: {} },
               { label: "hover",   props: { "data-hover": true } },
               { label: "active",  props: { "data-active": true } },
-              { label: "focus",   props: { "data-focus-visible": true, tabIndex: 0 } },
+              { label: "focus",   props: { state: "focus" as const } },
             ].map(({ label, props }) => (
               <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                 <Avatar

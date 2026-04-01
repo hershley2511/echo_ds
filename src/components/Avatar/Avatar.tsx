@@ -4,7 +4,7 @@ import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 export type AvatarSize   = "md" | "sm" | "xs" | "2xs"
 export type AvatarColour = "strong" | "neutral" | "subtle" | "mix"
 export type AvatarType   = "letter" | "icon"
-export type AvatarState  = "default" | "alert" | "disabled"
+export type AvatarState  = "default" | "alert" | "disabled" | "focus"
 
 export interface AvatarProps extends HTMLChakraProps<"div"> {
   type?: AvatarType
@@ -76,15 +76,23 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
   const isDisabled = state === "disabled"
   const letters    = getInitials(initials, name)
 
-  // CSS :active on a generic div is unreliable — manually track press state
-  // so Chakra's [data-group]:is(:active,[data-active]) selector fires correctly.
+  // CSS :active/:focus-visible on a generic div are unreliable — manually track
+  // both states so Chakra's [data-group]:is(:active,[data-active]) and
+  // [data-group]:is(:focus-visible,[data-focus-visible]) selectors fire correctly.
   const [pressed, setPressed] = useState(false)
-  const pressHandlers = isDisabled ? {} : {
+  const [focused, setFocused] = useState(false)
+
+  // state="focus" forces the focus ring statically (useful in Storybook controls).
+  const isFocused = state === "focus" || focused
+
+  const interactionHandlers = isDisabled ? {} : {
     onMouseDown:  () => setPressed(true),
     onMouseUp:    () => setPressed(false),
     onMouseLeave: () => setPressed(false),
     onTouchStart: () => setPressed(true),
     onTouchEnd:   () => setPressed(false),
+    onFocus:      () => setFocused(true),
+    onBlur:       () => setFocused(false),
   }
 
   // Disabled overrides colour with the system disabled tokens
@@ -96,6 +104,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
       ref={ref}
       data-group
       data-active={pressed ? "" : undefined}
+      data-focus-visible={isFocused ? "" : undefined}
       display="inline-flex"
       gap="4px"
       alignItems="center"
@@ -104,9 +113,9 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
       cursor={isDisabled ? "not-allowed" : "pointer"}
       pointerEvents={isDisabled ? "none" : undefined}
       fontFamily="Inter, sans-serif"
-      tabIndex={dropdown && !isDisabled ? 0 : undefined}
+      tabIndex={!isDisabled ? 0 : undefined}
       _focusVisible={{ outline: "none" }}
-      {...pressHandlers}
+      {...interactionHandlers}
       {...rest}
     >
       {/* Ring wrapper
