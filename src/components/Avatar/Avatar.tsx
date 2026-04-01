@@ -42,7 +42,7 @@ const colours: Record<AvatarColour, ColourConfig> = {
   strong:  { bg: "avatar.strong.default",  bgHover: "avatar.strong.hover",  bgActive: "avatar.strong.active",  ring: "avatar.strong.ring",  text: "content.dark.strong"        },
   neutral: { bg: "avatar.neutral.default", bgHover: "avatar.neutral.hover", bgActive: "avatar.neutral.active", ring: "avatar.neutral.ring", text: "content.dark.strong"        },
   subtle:  { bg: "avatar.subtle.default",  bgHover: "avatar.subtle.hover",  bgActive: "avatar.subtle.active",  ring: "avatar.subtle.ring",  text: "content.light.brand-strong" },
-  mix:     { bg: MIX_DEFAULT_GRADIENT,     bgHover: "green.100",            bgActive: "green.200",             ring: "focus.neutral-subtle", text: "content.light.brand-subtle" },
+  mix:     { bg: MIX_DEFAULT_GRADIENT,     bgHover: "green.100",            bgActive: "slate.100",             ring: "focus.neutral-subtle", text: "content.light.brand-subtle" },
 }
 
 function getInitials(initials?: string, name?: string): string {
@@ -130,14 +130,17 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
       onBlur={() => setIsFocused(false)}
       {...rest}
     >
-      {/* Ring wrapper — expands with border + padding when active or focused */}
+      {/* Ring wrapper — expands with border + padding when active or focused.
+          Use explicit borderWidth/borderStyle/borderColor (not the `border` shorthand)
+          so Chakra v3 doesn't reset borderColor via the shorthand cascade. */}
       <chakra.div
         position="relative"
         display="inline-flex"
         alignItems="center"
         justifyContent="center"
         borderRadius="50px"
-        border="2px solid"
+        borderWidth="2px"
+        borderStyle="solid"
         borderColor={hasRing ? ringColor : "transparent"}
         padding={hasRing ? "4px" : "0"}
         flexShrink={0}
