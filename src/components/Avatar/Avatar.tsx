@@ -1,5 +1,4 @@
 import { useState, forwardRef } from "react"
-import type { CSSProperties } from "react"
 import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
 export type AvatarSize   = "md" | "sm" | "xs" | "2xs"
@@ -35,14 +34,12 @@ interface ColourConfig {
   text: string     // Chakra semantic token
 }
 
-// Mix default: light slate→mint gradient (Figma: brand/secondary/50 → brand/primary/100)
-const MIX_DEFAULT_GRADIENT = "linear-gradient(135deg, #F6F7FF 0%, #DDFBC6 100%)"
-
 const colours: Record<AvatarColour, ColourConfig> = {
-  strong:  { bg: "avatar.strong.default",  bgHover: "avatar.strong.hover",  bgActive: "avatar.strong.active",  ring: "avatar.strong.ring",  text: "content.dark.strong"        },
-  neutral: { bg: "avatar.neutral.default", bgHover: "avatar.neutral.hover", bgActive: "avatar.neutral.active", ring: "avatar.neutral.ring", text: "content.dark.strong"        },
-  subtle:  { bg: "avatar.subtle.default",  bgHover: "avatar.subtle.hover",  bgActive: "avatar.subtle.active",  ring: "avatar.subtle.ring",  text: "content.light.brand-strong" },
-  mix:     { bg: MIX_DEFAULT_GRADIENT,     bgHover: "green.100",            bgActive: "slate.100",             ring: "focus.neutral-subtle", text: "content.light.brand-subtle" },
+  strong:  { bg: "avatar.strong.default",  bgHover: "avatar.strong.hover",  bgActive: "avatar.strong.active",  ring: "avatar.strong.ring",   text: "content.dark.strong"        },
+  neutral: { bg: "avatar.neutral.default", bgHover: "avatar.neutral.hover", bgActive: "avatar.neutral.active", ring: "avatar.neutral.ring",  text: "content.dark.strong"        },
+  subtle:  { bg: "avatar.subtle.default",  bgHover: "avatar.subtle.hover",  bgActive: "avatar.subtle.active",  ring: "avatar.subtle.ring",   text: "content.light.brand-strong" },
+  // Figma: default=brand/secondary/50 (#F6F7FF), hover=brand/primary/100 (#DDFBC6), active=brand/secondary/100 (#F0F1F9)
+  mix:     { bg: "brand.secondary.50",     bgHover: "green.100",            bgActive: "slate.100",             ring: "focus.neutral-subtle", text: "content.light.brand-subtle" },
 }
 
 function getInitials(initials?: string, name?: string): string {
@@ -89,21 +86,10 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
   const resolvedText = isDisabled ? "feedback.disabled.strong" : text
 
   // ── Circle background ────────────────────────────────────────────────────────
-  // Mix default is a CSS gradient → needs inline style; all other cases use Chakra tokens.
-  let circleBg:    string | undefined
-  let circleStyle: CSSProperties | undefined
-
-  if (isDisabled) {
-    circleBg = "feedback.disabled.bg"
-  } else if (pressed) {
-    circleBg = bgActive
-  } else if (hovered) {
-    circleBg = bgHover
-  } else if (colour === "mix") {
-    circleStyle = { background: bg }
-  } else {
-    circleBg = bg
-  }
+  const circleBg = isDisabled ? "feedback.disabled.bg"
+    : pressed  ? bgActive
+    : hovered  ? bgHover
+    : bg
 
   // ── Ring ─────────────────────────────────────────────────────────────────────
   const hasRing   = !isDisabled && (pressed || focused)
@@ -152,7 +138,6 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
           h={d}
           borderRadius="full"
           bg={circleBg}
-          style={circleStyle}
           display="flex"
           alignItems="center"
           justifyContent="center"
