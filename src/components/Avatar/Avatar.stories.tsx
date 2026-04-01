@@ -15,9 +15,9 @@ const meta: Meta<typeof Avatar> = {
     type:  { control: "select", options: ["letter", "icon"] },
     state: {
       control: "select",
-      options: ["default", "alert", "disabled", "hover", "active", "focus"],
+      options: ["default", "alert", "disabled"],
       description:
-        "Visual state. hover / active / focus are normally interaction-driven — selecting them here forces the appearance for preview.",
+        "Semantic component state. Hover / active / focus are CSS-driven — interact with the avatar in the canvas to trigger them.",
     },
   },
 }
@@ -100,16 +100,20 @@ export const States: Story = {
 // [data-group]:is(:hover, [data-hover]) &  etc., so passing the matching
 // data attribute on the root element forces the visual state without JS.
 
+// Chakra UI v3 maps _groupHover / _groupActive / _groupFocusVisible to
+// [data-group]:is(:hover, [data-hover]) & etc., so passing the matching
+// data attribute on the root element forces the visual state without JS.
+const interactionAttrs: Record<string, Record<string, string>> = {
+  default: {},
+  hover:   { "data-hover": "" },
+  active:  { "data-active": "" },
+  focus:   { "data-focus-visible": "" },
+}
+
 export const InteractionStates: Story = {
   name: "Interaction States",
   render: () => {
-    const interactionStates = [
-      { label: "default", state: "default" as const },
-      { label: "hover",   state: "hover"   as const },
-      { label: "active",  state: "active"  as const },
-      { label: "focus",   state: "focus"   as const },
-    ]
-
+    const labels = ["default", "hover", "active", "focus"] as const
     const colours = ["strong", "neutral", "subtle", "mix"] as const
 
     return (
@@ -120,9 +124,9 @@ export const InteractionStates: Story = {
               {colour}
             </span>
             <div style={{ display: "flex", gap: 24, alignItems: "flex-end" }}>
-              {interactionStates.map(({ label, state }) => (
+              {labels.map((label) => (
                 <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                  <Avatar initials="JD" colour={colour} size="md" state={state} />
+                  <Avatar initials="JD" colour={colour} size="md" {...interactionAttrs[label]} />
                   <span style={{ fontSize: 11, color: "#9A9FB8" }}>{label}</span>
                 </div>
               ))}
@@ -213,19 +217,14 @@ export const WithRemixIcons: Story = {
             Interaction states
           </span>
           <div style={{ display: "flex", gap: 24, alignItems: "flex-end" }}>
-            {[
-              { label: "default", state: "default" as const },
-              { label: "hover",   state: "hover"   as const },
-              { label: "active",  state: "active"  as const },
-              { label: "focus",   state: "focus"   as const },
-            ].map(({ label, props }) => (
+            {(["default", "hover", "active", "focus"] as const).map((label) => (
               <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                 <Avatar
                   type="icon"
                   colour="strong"
                   size="md"
-                  state={state}
                   icon={<i className="ri-user-3-line" style={{ fontSize: "inherit", lineHeight: 1 }} />}
+                  {...interactionAttrs[label]}
                 />
                 <span style={{ fontSize: 11, color: "#9A9FB8" }}>{label}</span>
               </div>
