@@ -1,4 +1,4 @@
-import { forwardRef } from "react"
+import { forwardRef, useState } from "react"
 import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
 export type AvatarSize   = "md" | "sm" | "xs" | "2xs"
@@ -76,6 +76,17 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
   const isDisabled = state === "disabled"
   const letters    = getInitials(initials, name)
 
+  // CSS :active on a generic div is unreliable — manually track press state
+  // so Chakra's [data-group]:is(:active,[data-active]) selector fires correctly.
+  const [pressed, setPressed] = useState(false)
+  const pressHandlers = isDisabled ? {} : {
+    onMouseDown:  () => setPressed(true),
+    onMouseUp:    () => setPressed(false),
+    onMouseLeave: () => setPressed(false),
+    onTouchStart: () => setPressed(true),
+    onTouchEnd:   () => setPressed(false),
+  }
+
   // Disabled overrides colour with the system disabled tokens
   const resolvedBg   = isDisabled ? "feedback.disabled.bg"     : bg
   const resolvedText = isDisabled ? "feedback.disabled.strong"  : text
@@ -84,6 +95,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
     <chakra.div
       ref={ref}
       data-group
+      data-active={pressed ? "" : undefined}
       display="inline-flex"
       gap="4px"
       alignItems="center"
@@ -94,6 +106,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
       fontFamily="Inter, sans-serif"
       tabIndex={dropdown && !isDisabled ? 0 : undefined}
       _focusVisible={{ outline: "none" }}
+      {...pressHandlers}
       {...rest}
     >
       {/* Ring wrapper
