@@ -15,9 +15,9 @@ const meta: Meta<typeof Avatar> = {
     type:  { control: "select", options: ["letter", "icon"] },
     state: {
       control: "select",
-      options: ["default", "alert", "disabled", "focus"],
+      options: ["default", "alert", "disabled", "hover", "active", "focus"],
       description:
-        "Visual state. default / alert / disabled are semantic props. focus forces the focus ring (for preview — in canvas, tab to the avatar to trigger it naturally).",
+        "Visual state. hover / active / focus are normally interaction-driven — selecting them here forces the appearance for preview.",
     },
   },
 }
@@ -104,11 +104,11 @@ export const InteractionStates: Story = {
   name: "Interaction States",
   render: () => {
     const interactionStates = [
-      { label: "default", props: {} },
-      { label: "hover",   props: { "data-hover": true } },
-      { label: "active",  props: { "data-active": true } },
-      { label: "focus",   props: { state: "focus" as const } },
-    ] as const
+      { label: "default", state: "default" as const },
+      { label: "hover",   state: "hover"   as const },
+      { label: "active",  state: "active"  as const },
+      { label: "focus",   state: "focus"   as const },
+    ]
 
     const colours = ["strong", "neutral", "subtle", "mix"] as const
 
@@ -120,9 +120,9 @@ export const InteractionStates: Story = {
               {colour}
             </span>
             <div style={{ display: "flex", gap: 24, alignItems: "flex-end" }}>
-              {interactionStates.map(({ label, props }) => (
+              {interactionStates.map(({ label, state }) => (
                 <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                  <Avatar initials="JD" colour={colour} size="md" {...(props as object)} />
+                  <Avatar initials="JD" colour={colour} size="md" state={state} />
                   <span style={{ fontSize: 11, color: "#9A9FB8" }}>{label}</span>
                 </div>
               ))}
@@ -214,18 +214,18 @@ export const WithRemixIcons: Story = {
           </span>
           <div style={{ display: "flex", gap: 24, alignItems: "flex-end" }}>
             {[
-              { label: "default", props: {} },
-              { label: "hover",   props: { "data-hover": true } },
-              { label: "active",  props: { "data-active": true } },
-              { label: "focus",   props: { state: "focus" as const } },
+              { label: "default", state: "default" as const },
+              { label: "hover",   state: "hover"   as const },
+              { label: "active",  state: "active"  as const },
+              { label: "focus",   state: "focus"   as const },
             ].map(({ label, props }) => (
               <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                 <Avatar
                   type="icon"
                   colour="strong"
                   size="md"
+                  state={state}
                   icon={<i className="ri-user-3-line" style={{ fontSize: "inherit", lineHeight: 1 }} />}
-                  {...(props as object)}
                 />
                 <span style={{ fontSize: 11, color: "#9A9FB8" }}>{label}</span>
               </div>

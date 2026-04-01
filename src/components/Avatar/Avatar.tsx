@@ -4,7 +4,7 @@ import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 export type AvatarSize   = "md" | "sm" | "xs" | "2xs"
 export type AvatarColour = "strong" | "neutral" | "subtle" | "mix"
 export type AvatarType   = "letter" | "icon"
-export type AvatarState  = "default" | "alert" | "disabled" | "focus"
+export type AvatarState  = "default" | "alert" | "disabled" | "hover" | "active" | "focus"
 
 export interface AvatarProps extends HTMLChakraProps<"div"> {
   type?: AvatarType
@@ -32,14 +32,10 @@ interface ColourConfig {
   text: string
 }
 
-// Mix is a gradient in Figma — bg uses CSS variable refs to palette tokens so no
-// raw hex values are hardcoded.
+// Mix is a Figma gradient — raw CSS variable refs so no hex is hardcoded.
 const MIX_GRADIENT =
   "linear-gradient(135deg, var(--chakra-colors-teal-600), var(--chakra-colors-lime-500))"
 
-// All colour values reference semantic tokens defined in theme/index.ts.
-// Exceptions: "content.dark.strong" and "content.light.brand-strong" are existing
-// semantic tokens; avatar.*.* tokens were added alongside this component.
 const colours: Record<AvatarColour, ColourConfig> = {
   strong:  { bg: "avatar.strong.default",  bgHover: "avatar.strong.hover",  bgActive: "avatar.strong.active",  ring: "avatar.strong.ring",  text: "content.dark.strong" },
   neutral: { bg: "avatar.neutral.default", bgHover: "avatar.neutral.hover", bgActive: "avatar.neutral.active", ring: "avatar.neutral.ring", text: "content.dark.strong" },
@@ -69,42 +65,52 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
   },
   ref
 ) {
-  const { d, arrow, fs, lh }               = sizes[size]
-  const { bg, bgHover, bgActive, ring, text } = colours[colour]
+  const { d, arrow, fs, lh }                  = sizes[size]
+  const { bg, bgHover, bgActive, ring, text }  = colours[colour]
 
   const isAlert    = state === "alert"
   const isDisabled = state === "disabled"
   const letters    = getInitials(initials, name)
 
-  // CSS :active/:focus-visible on a generic div are unreliable — manually track
-  // both states so Chakra's [data-group]:is(:active,[data-active]) and
-  // [data-group]:is(:focus-visible,[data-focus-visible]) selectors fire correctly.
+  // All interaction states are tracked via JS so they work reliably regardless
+  // of CSS pseudo-class propagation behaviour in the browser.
+  // The state prop can also force a visual state — used by Storybook controls
+  // and any static snapshot that needs a specific appearance.
+  const [hovered, setHovered] = useState(false)
   const [pressed, setPressed] = useState(false)
   const [focused, setFocused] = useState(false)
 
-  // state="focus" forces the focus ring statically (useful in Storybook controls).
-  const isFocused = state === "focus" || focused
+  const isHovered = !isDisabled && (hovered || state === "hover")
+  const isActive  = !isDisabled && (pressed || state === "active")
+  const isFocused = !isDisabled && (focused || state === "focus")
 
   const interactionHandlers = isDisabled ? {} : {
+    onMouseEnter: () => setHovered(true),
+    onMouseLeave: () => { setHovered(false); setPressed(false) },
     onMouseDown:  () => setPressed(true),
     onMouseUp:    () => setPressed(false),
-    onMouseLeave: () => setPressed(false),
     onTouchStart: () => setPressed(true),
     onTouchEnd:   () => setPressed(false),
     onFocus:      () => setFocused(true),
     onBlur:       () => setFocused(false),
   }
 
-  // Disabled overrides colour with the system disabled tokens
-  const resolvedBg   = isDisabled ? "feedback.disabled.bg"     : bg
-  const resolvedText = isDisabled ? "feedback.disabled.strong"  : text
+  // Background: active > hover > default; disabled overrides everything.
+  const resolvedBg   = isDisabled ? "feedback.disabled.bg"    :
+                       isActive   ? bgActive                  :
+                       isHovered  ? bgHover                   : bg
+  const resolvedText = isDisabled ? "feedback.disabled.strong" : text
+
+  // Ring: active shows the colour-matched ring; focus shows the brand focus ring.
+  // Hover has no ring per the Figma spec.
+  const ringColor   = isActive  ? ring :
+                      isFocused ? "focus.brand-default" :
+                      "transparent"
+  const ringPadding = (isActive || isFocused) ? "4px" : undefined
 
   return (
     <chakra.div
       ref={ref}
-      data-group
-      data-active={pressed ? "" : undefined}
-      data-focus-visible={isFocused ? "" : undefined}
       display="inline-flex"
       gap="4px"
       alignItems="center"
@@ -114,28 +120,24 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
       pointerEvents={isDisabled ? "none" : undefined}
       fontFamily="Inter, sans-serif"
       tabIndex={!isDisabled ? 0 : undefined}
-      _focusVisible={{ outline: "none" }}
+      outline="none"
       {...interactionHandlers}
       {...rest}
     >
-      {/* Ring wrapper
-          Default:       2px transparent border, no padding
-          Active:        2px solid ring colour + 4px padding  (matches Figma active treatment)
-          Focus-visible: 2px solid focus colour + 4px padding
-          Both scale the hit-area outward, not inward, so the circle stays the same size. */}
+      {/* Ring wrapper — 2px border, transparent by default.
+          Active:  colour-matched ring + 4px padding (Figma active treatment).
+          Focus:   brand green ring + 4px padding (Figma focus treatment). */}
       <chakra.div
         position="relative"
         display="inline-flex"
         alignItems="center"
         justifyContent="center"
         borderRadius="50px"
-        border="2px solid transparent"
+        border="2px solid"
+        borderColor={ringColor}
+        p={ringPadding}
         flexShrink={0}
         transition="border-color 0.1s, padding 0.1s"
-        {...(!isDisabled && {
-          _groupActive:       { borderColor: ring,                padding: "4px" },
-          _groupFocusVisible: { borderColor: "focus.brand-default", padding: "4px" },
-        })}
       >
         {/* Background circle */}
         <chakra.div
@@ -149,10 +151,6 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
           position="relative"
           overflow="hidden"
           transition="background 0.15s"
-          {...(!isDisabled && {
-            _groupHover:  { bg: bgHover },
-            _groupActive: { bg: bgActive },
-          })}
         >
           {type === "letter" && (
             <chakra.span
