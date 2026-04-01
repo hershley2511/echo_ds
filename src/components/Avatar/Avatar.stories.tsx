@@ -286,7 +286,7 @@ export const AvatarGroup: Story = {
               initials={u.initials}
               colour={u.colour}
               size="md"
-              style={{ border: "2px solid white", borderRadius: "50%" }}
+              style={{ boxShadow: "0 0 0 2px white", borderRadius: "50%" }}
             />
           </div>
         ))}
@@ -296,7 +296,7 @@ export const AvatarGroup: Story = {
             initials="+3"
             colour="neutral"
             size="md"
-            style={{ border: "2px solid white", borderRadius: "50%" }}
+            style={{ boxShadow: "0 0 0 2px white", borderRadius: "50%" }}
           />
         </div>
       </div>

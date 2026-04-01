@@ -130,21 +130,21 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
       onBlur={() => setIsFocused(false)}
       {...rest}
     >
-      {/* Ring wrapper — expands with border + padding when active or focused.
-          Use explicit borderWidth/borderStyle/borderColor (not the `border` shorthand)
-          so Chakra v3 doesn't reset borderColor via the shorthand cascade. */}
+      {/* Ring wrapper — outline paints outside the box model so the circle never
+          shifts position when the ring appears or disappears. outlineOffset creates
+          the 4px gap between the circle edge and the ring. */}
       <chakra.div
         position="relative"
         display="inline-flex"
         alignItems="center"
         justifyContent="center"
         borderRadius="50px"
-        borderWidth="2px"
-        borderStyle="solid"
-        borderColor={hasRing ? ringColor : "transparent"}
-        padding={hasRing ? "4px" : "0"}
         flexShrink={0}
-        transition="border-color 0.1s, padding 0.1s"
+        outlineWidth="2px"
+        outlineStyle="solid"
+        outlineColor={hasRing ? ringColor : "transparent"}
+        style={{ outlineOffset: "4px" }}
+        transition="outline-color 0.1s"
       >
         {/* Background circle */}
         <chakra.div
