@@ -16,8 +16,12 @@ const meta: Meta<typeof Avatar> = {
     state: {
       control: "select",
       options: ["default", "alert", "disabled"],
-      description:
-        "Semantic component state. Hover / active / focus are CSS-driven — interact with the avatar in the canvas to trigger them.",
+      description: "Semantic component state. Hover / active / focus are driven by mouse and keyboard — interact with the avatar in the canvas to trigger them.",
+    },
+    forceInteractionState: {
+      control: "select",
+      options: [undefined, "hover", "active", "focus"],
+      description: "Forces a visual interaction state without mouse events — for Storybook story grids only.",
     },
   },
 }
@@ -95,20 +99,7 @@ export const States: Story = {
   ),
 }
 
-// ── Interaction states (forced via Chakra data attributes) ───────────────────
-// Chakra UI v3 maps _groupHover / _groupActive / _groupFocusVisible to
-// [data-group]:is(:hover, [data-hover]) &  etc., so passing the matching
-// data attribute on the root element forces the visual state without JS.
-
-// Chakra UI v3 maps _groupHover / _groupActive / _groupFocusVisible to
-// [data-group]:is(:hover, [data-hover]) & etc., so passing the matching
-// data attribute on the root element forces the visual state without JS.
-const interactionAttrs: Record<string, Record<string, string>> = {
-  default: {},
-  hover:   { "data-hover": "" },
-  active:  { "data-active": "" },
-  focus:   { "data-focus-visible": "" },
-}
+// ── Interaction states (forced via forceInteractionState prop) ────────────────
 
 export const InteractionStates: Story = {
   name: "Interaction States",
@@ -126,7 +117,12 @@ export const InteractionStates: Story = {
             <div style={{ display: "flex", gap: 24, alignItems: "flex-end" }}>
               {labels.map((label) => (
                 <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                  <Avatar initials="JD" colour={colour} size="md" {...interactionAttrs[label]} />
+                  <Avatar
+                    initials="JD"
+                    colour={colour}
+                    size="md"
+                    forceInteractionState={label === "default" ? undefined : label}
+                  />
                   <span style={{ fontSize: 11, color: "#9A9FB8" }}>{label}</span>
                 </div>
               ))}
@@ -134,7 +130,7 @@ export const InteractionStates: Story = {
           </div>
         ))}
         <p style={{ fontSize: 11, color: "#9A9FB8", margin: 0 }}>
-          States are forced via Chakra data attributes (data-hover / data-active / data-focus-visible).
+          States forced via <code>forceInteractionState</code> prop. Hover and press any avatar above to see live interaction.
         </p>
       </div>
     )
@@ -223,8 +219,8 @@ export const WithRemixIcons: Story = {
                   type="icon"
                   colour="strong"
                   size="md"
+                  forceInteractionState={label === "default" ? undefined : label}
                   icon={<i className="ri-user-3-line" style={{ fontSize: "inherit", lineHeight: 1 }} />}
-                  {...interactionAttrs[label]}
                 />
                 <span style={{ fontSize: 11, color: "#9A9FB8" }}>{label}</span>
               </div>

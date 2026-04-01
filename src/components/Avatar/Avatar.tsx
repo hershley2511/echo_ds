@@ -1,4 +1,5 @@
-import { forwardRef } from "react"
+import { useState, forwardRef } from "react"
+import type { CSSProperties } from "react"
 import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
 export type AvatarSize   = "md" | "sm" | "xs" | "2xs"
@@ -7,14 +8,16 @@ export type AvatarType   = "letter" | "icon"
 export type AvatarState  = "default" | "alert" | "disabled"
 
 export interface AvatarProps extends HTMLChakraProps<"div"> {
-  type?: AvatarType
-  colour?: AvatarColour
-  size?: AvatarSize
-  state?: AvatarState
+  type?:     AvatarType
+  colour?:   AvatarColour
+  size?:     AvatarSize
+  state?:    AvatarState
   initials?: string
-  name?: string
-  icon?: React.ReactNode
+  name?:     string
+  icon?:     React.ReactNode
   dropdown?: boolean
+  /** Forces a visual interaction state without mouse events — for Storybook stories only */
+  forceInteractionState?: "hover" | "active" | "focus"
 }
 
 const sizes: Record<AvatarSize, { d: string; arrow: string; fs: string; lh: string }> = {
@@ -25,21 +28,21 @@ const sizes: Record<AvatarSize, { d: string; arrow: string; fs: string; lh: stri
 }
 
 interface ColourConfig {
-  bg: string
-  bgHover: string
-  bgActive: string
-  ring: string
-  text: string
+  bg: string       // Chakra semantic token — OR a raw CSS gradient string for mix default
+  bgHover: string  // Chakra semantic token
+  bgActive: string // Chakra semantic token
+  ring: string     // Chakra semantic token
+  text: string     // Chakra semantic token
 }
 
-const MIX_GRADIENT =
-  "linear-gradient(135deg, var(--chakra-colors-teal-600), var(--chakra-colors-lime-500))"
+// Mix default: light slate→mint gradient (Figma: brand/secondary/50 → brand/primary/100)
+const MIX_DEFAULT_GRADIENT = "linear-gradient(135deg, #F6F7FF 0%, #DDFBC6 100%)"
 
 const colours: Record<AvatarColour, ColourConfig> = {
-  strong:  { bg: "avatar.strong.default",  bgHover: "avatar.strong.hover",  bgActive: "avatar.strong.active",  ring: "avatar.strong.ring",  text: "content.dark.strong" },
-  neutral: { bg: "avatar.neutral.default", bgHover: "avatar.neutral.hover", bgActive: "avatar.neutral.active", ring: "avatar.neutral.ring", text: "content.dark.strong" },
+  strong:  { bg: "avatar.strong.default",  bgHover: "avatar.strong.hover",  bgActive: "avatar.strong.active",  ring: "avatar.strong.ring",  text: "content.dark.strong"        },
+  neutral: { bg: "avatar.neutral.default", bgHover: "avatar.neutral.hover", bgActive: "avatar.neutral.active", ring: "avatar.neutral.ring", text: "content.dark.strong"        },
   subtle:  { bg: "avatar.subtle.default",  bgHover: "avatar.subtle.hover",  bgActive: "avatar.subtle.active",  ring: "avatar.subtle.ring",  text: "content.light.brand-strong" },
-  mix:     { bg: MIX_GRADIENT,             bgHover: MIX_GRADIENT,           bgActive: MIX_GRADIENT,            ring: "avatar.subtle.ring",  text: "content.dark.strong" },
+  mix:     { bg: MIX_DEFAULT_GRADIENT,     bgHover: "green.100",            bgActive: "green.200",             ring: "focus.neutral-subtle", text: "content.light.brand-subtle" },
 }
 
 function getInitials(initials?: string, name?: string): string {
@@ -60,30 +63,55 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
     name,
     icon,
     dropdown = false,
+    forceInteractionState,
     ...rest
   },
   ref
 ) {
-  const { d, arrow, fs, lh }                  = sizes[size]
-  const { bg, bgHover, bgActive, ring, text }  = colours[colour]
+  // JS-tracked interaction state — works reliably in all browsers and Storybook iframes
+  const [isHovered, setIsHovered] = useState(false)
+  const [isPressed, setIsPressed] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
+
+  const { d, arrow, fs, lh }                = sizes[size]
+  const { bg, bgHover, bgActive, ring, text } = colours[colour]
 
   const isAlert    = state === "alert"
   const isDisabled = state === "disabled"
   const letters    = getInitials(initials, name)
 
-  const resolvedBg   = isDisabled ? "feedback.disabled.bg"    : bg
+  // forceInteractionState overrides live JS state (for Storybook story grids)
+  const hovered = forceInteractionState === "hover"  || isHovered
+  const pressed = forceInteractionState === "active" || isPressed
+  const focused = forceInteractionState === "focus"  || isFocused
+
+  // ── Text colour ─────────────────────────────────────────────────────────────
   const resolvedText = isDisabled ? "feedback.disabled.strong" : text
 
-  // Hover/active/focus are pure CSS via _group* conditions on children.
-  // tabIndex={0} is required on all interactive avatars so that:
-  //   - :active fires reliably (browsers need an interactive element)
-  //   - :focus-visible fires on keyboard navigation
-  // cursor:pointer is also required for :active in Safari on non-button elements.
+  // ── Circle background ────────────────────────────────────────────────────────
+  // Mix default is a CSS gradient → needs inline style; all other cases use Chakra tokens.
+  let circleBg:    string | undefined
+  let circleStyle: CSSProperties | undefined
+
+  if (isDisabled) {
+    circleBg = "feedback.disabled.bg"
+  } else if (pressed) {
+    circleBg = bgActive
+  } else if (hovered) {
+    circleBg = bgHover
+  } else if (colour === "mix") {
+    circleStyle = { background: bg }
+  } else {
+    circleBg = bg
+  }
+
+  // ── Ring ─────────────────────────────────────────────────────────────────────
+  const hasRing   = !isDisabled && (pressed || focused)
+  const ringColor = (focused && !pressed) ? "focus.brand-default" : ring
 
   return (
     <chakra.div
       ref={ref}
-      data-group
       display="inline-flex"
       gap="4px"
       alignItems="center"
@@ -94,40 +122,40 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
       fontFamily="Inter, sans-serif"
       tabIndex={!isDisabled ? 0 : undefined}
       _focusVisible={{ outline: "none" }}
+      onMouseEnter={() => { if (!isDisabled) setIsHovered(true) }}
+      onMouseLeave={() => { setIsHovered(false); setIsPressed(false) }}
+      onMouseDown={() => { if (!isDisabled) setIsPressed(true) }}
+      onMouseUp={() => setIsPressed(false)}
+      onFocus={() => { if (!isDisabled) setIsFocused(true) }}
+      onBlur={() => setIsFocused(false)}
       {...rest}
     >
-      {/* Ring wrapper
-          Default:        2px transparent border, no padding
-          Active  (CSS):  colour ring + 4px padding
-          Focus   (CSS):  brand-green ring + 4px padding */}
+      {/* Ring wrapper — expands with border + padding when active or focused */}
       <chakra.div
         position="relative"
         display="inline-flex"
         alignItems="center"
         justifyContent="center"
         borderRadius="50px"
-        border="2px solid transparent"
+        border="2px solid"
+        borderColor={hasRing ? ringColor : "transparent"}
+        padding={hasRing ? "4px" : "0"}
         flexShrink={0}
         transition="border-color 0.1s, padding 0.1s"
-        _groupActive={isDisabled ? {} : { borderColor: ring, padding: "4px" }}
-        _groupFocusVisible={isDisabled ? {} : { borderColor: "focus.brand-default", padding: "4px" }}
       >
-        {/* Background circle
-            Hover  (CSS):  bgHover
-            Active (CSS):  bgActive — takes precedence via selector specificity */}
+        {/* Background circle */}
         <chakra.div
           w={d}
           h={d}
           borderRadius="full"
-          bg={resolvedBg}
+          bg={circleBg}
+          style={circleStyle}
           display="flex"
           alignItems="center"
           justifyContent="center"
           position="relative"
           overflow="hidden"
           transition="background 0.15s"
-          _groupHover={isDisabled ? {} : { bg: bgHover }}
-          _groupActive={isDisabled ? {} : { bg: bgActive }}
         >
           {type === "letter" && (
             <chakra.span
