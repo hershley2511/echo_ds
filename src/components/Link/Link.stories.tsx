@@ -64,9 +64,17 @@ export const WithIcons: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, fontFamily: "Inter, sans-serif" }}>
       {(["None", "Left", "Right"] as const).map((pos) => (
-        <div key={pos} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div key={pos} style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <span style={{ width: 40, fontSize: 11, color: "#7C8094" }}>{pos}</span>
-          <Link href="#" colour="Link" size="md" iconPosition={pos}>Go to page</Link>
+          <Link href="#" colour="Link" size="md" iconPosition={pos}>
+            Default arrow
+          </Link>
+          <Link href="#" colour="Link" size="md" iconPosition={pos} icon={<i className="ri-arrow-right-line" />}>
+            Remix icon
+          </Link>
+          <Link href="#" colour="Neutral" size="md" iconPosition={pos} icon={<i className="ri-external-link-line" />}>
+            External
+          </Link>
         </div>
       ))}
     </div>

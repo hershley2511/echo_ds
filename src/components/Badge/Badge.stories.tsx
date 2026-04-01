@@ -83,21 +83,33 @@ export const WithIcons: Story = {
     <div style={{ display: "flex", gap: 10, flexWrap: "wrap", fontFamily: "Inter, sans-serif" }}>
       <Badge
         variant="Subtle" colour="Success" size="sm"
-        showLeadingIcon leadingIcon={<span>✓</span>}
+        showLeadingIcon leadingIcon={<i className="ri-check-line" />}
       >
         Verified
       </Badge>
       <Badge
         variant="Strong" colour="Critical" size="sm"
-        showTrailingIcon trailingIcon={<span>!</span>}
+        showTrailingIcon trailingIcon={<i className="ri-close-circle-line" />}
       >
         Error
       </Badge>
       <Badge
         variant="Outline" colour="Info" size="sm"
-        showLeadingIcon leadingIcon={<span>ℹ</span>}
+        showLeadingIcon leadingIcon={<i className="ri-information-line" />}
       >
         Info
+      </Badge>
+      <Badge
+        variant="Subtle" colour="Warning" size="sm"
+        showLeadingIcon leadingIcon={<i className="ri-alert-line" />}
+      >
+        Warning
+      </Badge>
+      <Badge
+        variant="Strong" colour="Brand" size="sm"
+        showTrailingIcon trailingIcon={<i className="ri-arrow-right-line" />}
+      >
+        Continue
       </Badge>
     </div>
   ),

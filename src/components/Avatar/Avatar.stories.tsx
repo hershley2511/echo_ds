@@ -68,8 +68,6 @@ export const Sizes: Story = {
 }
 
 // ── Static states ────────────────────────────────────────────────────────────
-// Hover, active, and focus are CSS pseudo-classes — interact with the avatars
-// in the canvas to trigger them. Default, alert, and disabled are prop-driven.
 
 export const States: Story = {
   render: () => (
@@ -97,6 +95,49 @@ export const States: Story = {
   ),
 }
 
+// ── Interaction states (forced via Chakra data attributes) ───────────────────
+// Chakra UI v3 maps _groupHover / _groupActive / _groupFocusVisible to
+// [data-group]:is(:hover, [data-hover]) &  etc., so passing the matching
+// data attribute on the root element forces the visual state without JS.
+
+export const InteractionStates: Story = {
+  name: "Interaction States",
+  render: () => {
+    const interactionStates = [
+      { label: "default",      props: {} },
+      { label: "hover",        props: { "data-hover": true } },
+      { label: "active",       props: { "data-active": true } },
+      { label: "focus",        props: { "data-focus-visible": true, tabIndex: 0 } },
+    ] as const
+
+    const colours = ["strong", "neutral", "subtle", "mix", "purple", "green", "mocha", "blue"] as const
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 32, fontFamily: "Inter, sans-serif" }}>
+        {/* Per-colour rows */}
+        {colours.map((colour) => (
+          <div key={colour} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{ fontSize: 11, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              {colour}
+            </span>
+            <div style={{ display: "flex", gap: 24, alignItems: "flex-end" }}>
+              {interactionStates.map(({ label, props }) => (
+                <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                  <Avatar initials="JD" colour={colour} size="md" {...(props as object)} />
+                  <span style={{ fontSize: 11, color: "#9A9FB8" }}>{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+        <p style={{ fontSize: 11, color: "#9A9FB8", margin: 0 }}>
+          States are forced via Chakra data attributes (data-hover / data-active / data-focus-visible).
+        </p>
+      </div>
+    )
+  },
+}
+
 // ── Type: Letter vs Icon ─────────────────────────────────────────────────────
 
 export const Types: Story = {
@@ -112,6 +153,94 @@ export const Types: Story = {
       ))}
     </div>
   ),
+}
+
+// ── Remix Icons ──────────────────────────────────────────────────────────────
+// Remix Icons are available via <i className="ri-*" /> after importing
+// remixicon/fonts/remixicon.css in .storybook/preview.tsx
+
+export const WithRemixIcons: Story = {
+  name: "With Remix Icons",
+  render: () => {
+    const examples: Array<{ colour: "strong" | "neutral" | "subtle" | "purple" | "green" | "mocha" | "blue"; icon: string; label: string }> = [
+      { colour: "strong",  icon: "ri-user-3-line",       label: "user" },
+      { colour: "neutral", icon: "ri-settings-4-line",   label: "settings" },
+      { colour: "subtle",  icon: "ri-shield-check-line", label: "shield" },
+      { colour: "purple",  icon: "ri-star-line",         label: "star" },
+      { colour: "green",   icon: "ri-leaf-line",         label: "leaf" },
+      { colour: "mocha",   icon: "ri-heart-line",        label: "heart" },
+      { colour: "blue",    icon: "ri-mail-line",         label: "mail" },
+    ]
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 32, fontFamily: "Inter, sans-serif" }}>
+        {/* All sizes */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <span style={{ fontSize: 11, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Sizes
+          </span>
+          <div style={{ display: "flex", gap: 16, alignItems: "flex-end" }}>
+            {(["md", "sm", "xs", "2xs"] as const).map((s) => (
+              <div key={s} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                <Avatar
+                  type="icon"
+                  colour="strong"
+                  size={s}
+                  icon={<i className="ri-user-3-line" style={{ fontSize: "inherit", lineHeight: 1 }} />}
+                />
+                <span style={{ fontSize: 11, color: "#9A9FB8" }}>{s}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Across colours */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <span style={{ fontSize: 11, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Colour variants
+          </span>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-end" }}>
+            {examples.map(({ colour, icon, label }) => (
+              <div key={colour} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                <Avatar
+                  type="icon"
+                  colour={colour}
+                  size="md"
+                  icon={<i className={icon} style={{ fontSize: "inherit", lineHeight: 1 }} />}
+                />
+                <span style={{ fontSize: 11, color: "#9A9FB8" }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Interaction states with remix icon */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <span style={{ fontSize: 11, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Interaction states
+          </span>
+          <div style={{ display: "flex", gap: 24, alignItems: "flex-end" }}>
+            {[
+              { label: "default", props: {} },
+              { label: "hover",   props: { "data-hover": true } },
+              { label: "active",  props: { "data-active": true } },
+              { label: "focus",   props: { "data-focus-visible": true, tabIndex: 0 } },
+            ].map(({ label, props }) => (
+              <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                <Avatar
+                  type="icon"
+                  colour="strong"
+                  size="md"
+                  icon={<i className="ri-user-3-line" style={{ fontSize: "inherit", lineHeight: 1 }} />}
+                  {...(props as object)}
+                />
+                <span style={{ fontSize: 11, color: "#9A9FB8" }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  },
 }
 
 // ── Dropdown ─────────────────────────────────────────────────────────────────

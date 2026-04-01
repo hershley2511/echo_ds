@@ -11,10 +11,10 @@ export default meta
 type Story = StoryObj
 
 const ITEMS = [
-  { label: "Edit", value: "edit", icon: "✏️" },
-  { label: "Duplicate", value: "duplicate", icon: "📋" },
-  { label: "Share", value: "share", icon: "↗" },
-  { label: "Delete", value: "delete", icon: "🗑️", isDanger: true, dividerBefore: true },
+  { label: "Edit",      value: "edit",      icon: <i className="ri-edit-line" /> },
+  { label: "Duplicate", value: "duplicate", icon: <i className="ri-file-copy-line" /> },
+  { label: "Share",     value: "share",     icon: <i className="ri-share-line" /> },
+  { label: "Delete",    value: "delete",    icon: <i className="ri-delete-bin-line" />, isDanger: true, dividerBefore: true },
 ]
 
 const Trigger = () => (

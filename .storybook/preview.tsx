@@ -1,6 +1,7 @@
 import type { Preview } from "@storybook/react"
 import { ChakraProvider } from "@chakra-ui/react"
 import { system } from "../src/theme"
+import "remixicon/fonts/remixicon.css"
 
 const preview: Preview = {
   parameters: {

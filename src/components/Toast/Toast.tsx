@@ -11,10 +11,10 @@ export interface ToastProps extends HTMLChakraProps<"div"> {
 }
 
 const variantStyles: Record<ToastVariant, { borderColor: string; iconColor: string; icon: string }> = {
-  info: { borderColor: "#BEE3F8", iconColor: "#2B6CB0", icon: "ℹ" },
-  success: { borderColor: "#BBF0BB", iconColor: "#009D7B", icon: "✓" },
-  warning: { borderColor: "#FFE89A", iconColor: "#8B6005", icon: "⚠" },
-  critical: { borderColor: "#FFCAB5", iconColor: "#C84F25", icon: "!" },
+  info:     { borderColor: "#BEE3F8", iconColor: "#2B6CB0", icon: "ri-information-line" },
+  success:  { borderColor: "#BBF0BB", iconColor: "#009D7B", icon: "ri-check-line" },
+  warning:  { borderColor: "#FFE89A", iconColor: "#8B6005", icon: "ri-alert-line" },
+  critical: { borderColor: "#FFCAB5", iconColor: "#C84F25", icon: "ri-close-circle-line" },
 }
 
 export const Toast = forwardRef<HTMLDivElement, ToastProps>(function Toast(
@@ -49,12 +49,12 @@ export const Toast = forwardRef<HTMLDivElement, ToastProps>(function Toast(
         display="flex"
         alignItems="center"
         justifyContent="center"
-        fontSize="11px"
+        fontSize="13px"
         fontWeight="700"
         flexShrink={0}
         mt="1px"
       >
-        {icon}
+        <i className={icon} style={{ lineHeight: 1 }} />
       </chakra.div>
       <chakra.div flex={1}>
         <chakra.p m={0} fontSize="14px" fontWeight="600" color="slate.800" lineHeight="1.4">
@@ -84,7 +84,7 @@ export const Toast = forwardRef<HTMLDivElement, ToastProps>(function Toast(
           _hover={{ color: "slate.800" }}
           aria-label="Dismiss"
         >
-          ✕
+          <i className="ri-close-line" style={{ fontSize: "14px", lineHeight: 1 }} />
         </chakra.button>
       )}
     </chakra.div>

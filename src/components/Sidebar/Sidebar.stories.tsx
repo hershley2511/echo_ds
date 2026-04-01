@@ -11,19 +11,19 @@ export default meta
 type Story = StoryObj
 
 const NAV_ITEMS = [
-  { label: "Dashboard", value: "dashboard", icon: "📊" },
-  { label: "Cases", value: "cases", icon: "📁", badge: 5 },
-  { label: "Reports", value: "reports", icon: "📄" },
+  { label: "Dashboard", value: "dashboard", icon: <i className="ri-dashboard-line" /> },
+  { label: "Cases",     value: "cases",     icon: <i className="ri-folder-line" />,       badge: 5 },
+  { label: "Reports",   value: "reports",   icon: <i className="ri-file-text-line" /> },
   {
     label: "Users",
     value: "users",
-    icon: "👥",
+    icon: <i className="ri-group-line" />,
     children: [
       { label: "All Users", value: "users-all" },
-      { label: "Admins", value: "users-admins" },
+      { label: "Admins",    value: "users-admins" },
     ],
   },
-  { label: "Settings", value: "settings", icon: "⚙️" },
+  { label: "Settings", value: "settings", icon: <i className="ri-settings-4-line" /> },
 ]
 
 export const Playground: Story = {

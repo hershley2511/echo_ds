@@ -11,11 +11,11 @@ export default meta
 type Story = StoryObj
 
 const TABS = [
-  { label: "Dashboard", value: "dashboard", icon: "📊" },
-  { label: "Reports", value: "reports", icon: "📄", badge: 2 },
-  { label: "Users", value: "users", icon: "👥", badge: 14 },
-  { label: "Settings", value: "settings", icon: "⚙️" },
-  { label: "Disabled", value: "disabled", icon: "🔒", isDisabled: true },
+  { label: "Dashboard", value: "dashboard", icon: <i className="ri-dashboard-line" /> },
+  { label: "Reports",   value: "reports",   icon: <i className="ri-bar-chart-line" />,    badge: 2 },
+  { label: "Users",     value: "users",     icon: <i className="ri-group-line" />,         badge: 14 },
+  { label: "Settings",  value: "settings",  icon: <i className="ri-settings-4-line" /> },
+  { label: "Disabled",  value: "disabled",  icon: <i className="ri-lock-line" />,          isDisabled: true },
 ]
 
 export const Playground: Story = {

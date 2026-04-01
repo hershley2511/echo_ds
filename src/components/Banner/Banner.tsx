@@ -12,10 +12,10 @@ export interface BannerProps extends HTMLChakraProps<"div"> {
 }
 
 const variants: Record<BannerVariant, { bg: string; borderColor: string; iconColor: string; icon: string }> = {
-  info: { bg: "#EBF8FF", borderColor: "#BEE3F8", iconColor: "#2B6CB0", icon: "ℹ" },
-  success: { bg: "#F1FFE5", borderColor: "#BBF0BB", iconColor: "#009D7B", icon: "✓" },
-  warning: { bg: "#FFFAE2", borderColor: "#FFE89A", iconColor: "#8B6005", icon: "⚠" },
-  critical: { bg: "#FFE8E0", borderColor: "#FFCAB5", iconColor: "#C84F25", icon: "✕" },
+  info:     { bg: "#EBF8FF", borderColor: "#BEE3F8", iconColor: "#2B6CB0", icon: "ri-information-line" },
+  success:  { bg: "#F1FFE5", borderColor: "#BBF0BB", iconColor: "#009D7B", icon: "ri-check-line" },
+  warning:  { bg: "#FFFAE2", borderColor: "#FFE89A", iconColor: "#8B6005", icon: "ri-alert-line" },
+  critical: { bg: "#FFE8E0", borderColor: "#FFCAB5", iconColor: "#C84F25", icon: "ri-close-line" },
 }
 
 export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
@@ -47,12 +47,12 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
         display="flex"
         alignItems="center"
         justifyContent="center"
-        fontSize="12px"
+        fontSize="13px"
         fontWeight="700"
         flexShrink={0}
         mt="1px"
       >
-        {icon}
+        <i className={icon} style={{ lineHeight: 1 }} />
       </chakra.div>
       <chakra.div flex={1} display="flex" flexDir="column" gap="4px">
         {title && (
@@ -86,7 +86,7 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
           _hover={{ bg: "rgba(0,0,0,0.06)" }}
           aria-label="Dismiss"
         >
-          ✕
+          <i className="ri-close-line" style={{ fontSize: "16px", lineHeight: 1 }} />
         </chakra.button>
       )}
     </chakra.div>
