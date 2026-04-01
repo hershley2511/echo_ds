@@ -19,50 +19,51 @@ export interface BadgeProps extends HTMLChakraProps<"span"> {
   trailingIcon?: React.ReactNode
 }
 
-// bg / text / borderColor per variant × colour
+// bg / text / border per variant × colour — all values are semantic or primitive tokens.
+// "yellow.200" and "green.900" are primitive tokens (no semantic alias exists for these).
 const styles: Record<BadgeVariant, Record<BadgeColour, { bg: string; text: string; border?: string }>> = {
   Strong: {
-    Brand:    { bg: "#026257", text: "#F6F7FF" },
-    Success:  { bg: "#009D7B", text: "#F6F7FF" },
-    Info:     { bg: "#3182CE", text: "#F6F7FF" },
-    Warning:  { bg: "#FFDA68", text: "#8B6005" },
-    Critical: { bg: "#C84F25", text: "#F6F7FF" },
-    Neutral:  { bg: "#6B6F8C", text: "#F6F7FF" },
+    Brand:    { bg: "interaction.main.default",    text: "content.dark.default" },
+    Success:  { bg: "interaction.success.default", text: "content.dark.default" },
+    Info:     { bg: "interaction.info.default",    text: "content.dark.default" },
+    Warning:  { bg: "feedback.warning.default",    text: "feedback.warning.strong" },
+    Critical: { bg: "feedback.critical.default",   text: "content.dark.default" },
+    Neutral:  { bg: "content.light.medium",        text: "content.dark.default" },
   },
   Subtle: {
-    Brand:    { bg: "#DDFBC6", text: "#014039" },
-    Success:  { bg: "#F1FFE5", text: "#017B68" },
-    Info:     { bg: "#EBF8FF", text: "#2B6CB0" },
-    Warning:  { bg: "#FFEFA1", text: "#8B6005" },
-    Critical: { bg: "#FFE8E0", text: "#A64929" },
-    Neutral:  { bg: "#F0F1F9", text: "#424559" },
+    Brand:    { bg: "interaction.muted.default",    text: "green.900" },
+    Success:  { bg: "feedback.success.subtle",      text: "content.light.brand-subtle" },
+    Info:     { bg: "feedback.info.subtle",         text: "feedback.info.strong" },
+    Warning:  { bg: "yellow.200",                   text: "feedback.warning.strong" },
+    Critical: { bg: "feedback.critical.subtle",     text: "feedback.critical.strong" },
+    Neutral:  { bg: "interaction.neutral.default",  text: "content.light.default" },
   },
   Outline: {
-    Brand:    { bg: "#DDFBC6", text: "#014039", border: "#014039" },
-    Success:  { bg: "#F1FFE5", text: "#017B68", border: "#009D7B" },
-    Info:     { bg: "#EBF8FF", text: "#2B6CB0", border: "#3182CE" },
-    Warning:  { bg: "#FFEFA1", text: "#8B6005", border: "#8B6005" },
-    Critical: { bg: "#FFE8E0", text: "#A64929", border: "#C84F25" },
-    Neutral:  { bg: "#F0F1F9", text: "#424559", border: "#424559" },
+    Brand:    { bg: "interaction.muted.default",   text: "green.900",                  border: "green.900" },
+    Success:  { bg: "feedback.success.subtle",     text: "content.light.brand-subtle", border: "interaction.success.default" },
+    Info:     { bg: "feedback.info.subtle",        text: "feedback.info.strong",       border: "interaction.info.default" },
+    Warning:  { bg: "yellow.200",                  text: "feedback.warning.strong",    border: "feedback.warning.strong" },
+    Critical: { bg: "feedback.critical.subtle",    text: "feedback.critical.strong",   border: "feedback.critical.default" },
+    Neutral:  { bg: "interaction.neutral.default", text: "content.light.default",      border: "content.light.default" },
   },
   Mixed: {
-    Brand:    { bg: "#F0F1F9", text: "#017B68" },
-    Success:  { bg: "#F0F1F9", text: "#017B68" },
-    Info:     { bg: "#F0F1F9", text: "#2B6CB0" },
-    Warning:  { bg: "#F0F1F9", text: "#8B6005" },
-    Critical: { bg: "#F0F1F9", text: "#A64929" },
-    Neutral:  { bg: "#F0F1F9", text: "#017B68" },
+    Brand:    { bg: "interaction.neutral.default", text: "content.light.brand-subtle" },
+    Success:  { bg: "interaction.neutral.default", text: "content.light.brand-subtle" },
+    Info:     { bg: "interaction.neutral.default", text: "feedback.info.strong" },
+    Warning:  { bg: "interaction.neutral.default", text: "feedback.warning.strong" },
+    Critical: { bg: "interaction.neutral.default", text: "feedback.critical.strong" },
+    Neutral:  { bg: "interaction.neutral.default", text: "content.light.brand-subtle" },
   },
 }
 
-// Dot color for background=false (status indicator) variant
-const dotColors: Record<BadgeColour, string> = {
-  Brand:    "#026257",
-  Success:  "#009D7B",
-  Info:     "#3182CE",
-  Warning:  "#FFDA68",
-  Critical: "#C84F25",
-  Neutral:  "#6B6F8C",
+// Dot colour for background=false (status indicator) mode
+const dotTokens: Record<BadgeColour, string> = {
+  Brand:    "interaction.main.default",
+  Success:  "interaction.success.default",
+  Info:     "interaction.info.default",
+  Warning:  "feedback.warning.default",
+  Critical: "feedback.critical.default",
+  Neutral:  "content.light.medium",
 }
 
 const sizeStyles = {
@@ -89,7 +90,6 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
   const { px, py, fontSize, fontWeight, lineHeight, iconSize } = sizeStyles[size]
   const borderRadius = border === "Rounded" ? "999px" : "8px"
 
-  // No-background / status indicator style
   if (!background) {
     return (
       <chakra.span
@@ -101,7 +101,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
         fontSize="14px"
         fontWeight="400"
         lineHeight="20px"
-        color="#454953"
+        color="grey.700"
         style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1" }}
         {...rest}
       >
@@ -110,7 +110,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
           w="8px"
           h="8px"
           borderRadius="full"
-          bg={dotColors[colour]}
+          bg={dotTokens[colour]}
           flexShrink={0}
         />
         {children}

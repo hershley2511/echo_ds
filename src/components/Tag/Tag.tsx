@@ -2,7 +2,7 @@ import { forwardRef } from "react"
 import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
 export type TagVariant = "Subtle" | "Outline" | "Strong"
-export type TagColour = "Brand" | "Teal" | "Lime" | "Cyan" | "Orange" | "Purple" | "Red" | "Pink" | "Gray" | "White"
+export type TagColour = "Brand" | "Teal" | "Purple" | "Mocha" | "Critical" | "Neutral"
 export type TagSize = "md" | "sm" | "xs"
 export type TagBorder = "Default" | "Rounded"
 export type TagState = "Default" | "Disabled"
@@ -17,25 +17,21 @@ export interface TagProps extends HTMLChakraProps<"span"> {
   children?: React.ReactNode
 }
 
-// Subtle: light bg + dark text. Strong: saturated bg + white text. Outline: subtle bg + border.
+// Subtle: light bg + dark text. Strong: saturated bg + light text. Outline: subtle bg + strong border.
 const colourTokens: Record<TagColour, { subtle: { bg: string; text: string }; strong: { bg: string; text: string } }> = {
-  Brand:  { subtle: { bg: "#DDFBC6", text: "#014039" }, strong: { bg: "#026257", text: "#FFFFFF" } },
-  Teal:   { subtle: { bg: "#E0F4F8", text: "#2A6373" }, strong: { bg: "#367F94", text: "#FFFFFF" } },
-  Lime:   { subtle: { bg: "#F4FFD6", text: "#3A5C00" }, strong: { bg: "#6BAE00", text: "#FFFFFF" } },
-  Cyan:   { subtle: { bg: "#E0F7FA", text: "#006978" }, strong: { bg: "#00838F", text: "#FFFFFF" } },
-  Orange: { subtle: { bg: "#FFF3E0", text: "#BF5000" }, strong: { bg: "#E67E59", text: "#FFFFFF" } },
-  Purple: { subtle: { bg: "#F3E8FF", text: "#5B21B6" }, strong: { bg: "#7C3F9A", text: "#FFFFFF" } },
-  Red:    { subtle: { bg: "#FFE8E0", text: "#A64929" }, strong: { bg: "#C84F25", text: "#FFFFFF" } },
-  Pink:   { subtle: { bg: "#FFE4F0", text: "#9B1C5A" }, strong: { bg: "#C2185B", text: "#FFFFFF" } },
-  Gray:   { subtle: { bg: "#F0F1F9", text: "#424559" }, strong: { bg: "#6B6F8C", text: "#FFFFFF" } },
-  White:  { subtle: { bg: "#FFFFFF", text: "#424559" }, strong: { bg: "#FFFFFF", text: "#424559" } },
+  Brand:    { subtle: { bg: "brand.primary.100",           text: "interaction.main.active"    }, strong: { bg: "brand.primary.600",            text: "content.dark.default" } },
+  Teal:     { subtle: { bg: "teal.200",                    text: "teal.800"                   }, strong: { bg: "teal.500",                     text: "teal.50"              } },
+  Purple:   { subtle: { bg: "purple.100",                  text: "purple.700"                 }, strong: { bg: "purple.500",                   text: "purple.50"            } },
+  Mocha:    { subtle: { bg: "mocha.200",                   text: "mocha.800"                  }, strong: { bg: "mocha.600",                    text: "mocha.50"             } },
+  Critical: { subtle: { bg: "feedback.critical.subtle",    text: "feedback.critical.strong"   }, strong: { bg: "interaction.critical.default", text: "red.50"               } },
+  Neutral:  { subtle: { bg: "interaction.neutral.default", text: "content.light.default"      }, strong: { bg: "brand.secondary.500",          text: "content.dark.default" } },
 }
 
-// Size → { h, px, py, fontSize, lineHeight, closeSize }
-const sizeTokens: Record<TagSize, { h: string; px: string; py: string; fontSize: string; lineHeight: string; closeSize: string }> = {
-  md: { h: "26px", px: "8px", py: "4px", fontSize: "12px", lineHeight: "16px", closeSize: "14px" },
-  sm: { h: "24px", px: "8px", py: "4px", fontSize: "12px", lineHeight: "14px", closeSize: "12px" },
-  xs: { h: "22px", px: "6px", py: "3px", fontSize: "11px", lineHeight: "14px", closeSize: "12px" },
+// Size → { h, px, py, gap, fontSize, fontWeight, lineHeight, fontFeatures, closeSize }
+const sizeTokens: Record<TagSize, { h: string; px: string; py: string; gap: string; fontSize: string; fontWeight: string; lineHeight: string; fontFeatures: string; closeSize: string }> = {
+  md: { h: "26px", px: "8px", py: "4px", gap: "4px", fontSize: "14px", fontWeight: "500", lineHeight: "16px", fontFeatures: "'cv05' 1, 'cv10' 1",                       closeSize: "18px" },
+  sm: { h: "24px", px: "8px", py: "2px", gap: "4px", fontSize: "14px", fontWeight: "400", lineHeight: "20px", fontFeatures: "'cv05' 1, 'cv10' 1, 'lnum' 1, 'tnum' 1", closeSize: "18px" },
+  xs: { h: "20px", px: "8px", py: "2px", gap: "2px", fontSize: "12px", fontWeight: "500", lineHeight: "16px", fontFeatures: "'cv05' 1, 'cv10' 1, 'lnum' 1, 'tnum' 1", closeSize: "14px" },
 }
 
 export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
@@ -51,7 +47,7 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
   },
   ref
 ) {
-  const { h, px, py, fontSize, lineHeight, closeSize } = sizeTokens[size]
+  const { h, px, py, gap, fontSize, fontWeight, lineHeight, fontFeatures, closeSize } = sizeTokens[size]
   const borderRadius = border === "Rounded" ? "999px" : "8px"
   const isDisabled = state === "Disabled"
 
@@ -75,14 +71,14 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
       ref={ref}
       display="inline-flex"
       alignItems="center"
-      gap="4px"
+      gap={gap}
       h={h}
       px={px}
       py={py}
       bg={bg}
       color={text}
       fontSize={fontSize}
-      fontWeight="500"
+      fontWeight={fontWeight}
       lineHeight={lineHeight}
       fontFamily="Inter, sans-serif"
       borderRadius={borderRadius}
@@ -91,12 +87,14 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
       opacity={isDisabled ? 0.4 : 1}
       cursor={isDisabled ? "not-allowed" : "default"}
       whiteSpace="nowrap"
+      style={{ fontFeatureSettings: fontFeatures }}
       _hover={!isDisabled ? { filter: "brightness(0.94)" } : undefined}
       _active={!isDisabled ? { filter: "brightness(0.88)" } : undefined}
       _focusVisible={!isDisabled ? {
-        boxShadow: "0 0 0 2px #DDFBC6",
-        outline: "2px solid #009D7B",
+        outline: "2px solid",
+        outlineColor: "focus.brand-default",
         outlineOffset: "1px",
+        boxShadow: `0 0 0 4px var(--chakra-colors-brand-primary-100)`,
       } : undefined}
       {...rest}
     >

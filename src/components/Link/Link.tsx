@@ -22,8 +22,8 @@ const sizeTokens: Record<LinkSize, { fontSize: string; lineHeight: string; iconS
 }
 
 const colorTokens: Record<LinkColour, { default: string; hover: string; disabled: string }> = {
-  Link:    { default: "#009D7B", hover: "#017B68", disabled: "#A0A4AD" },
-  Neutral: { default: "#575B73", hover: "#1F2233", disabled: "#A0A4AD" },
+  Link:    { default: "interaction.links.default",         hover: "interaction.links.hover",         disabled: "grey.300" },
+  Neutral: { default: "interaction.links.neutral-default", hover: "interaction.links.neutral-hover", disabled: "grey.300" },
 }
 
 const DefaultArrowIcon = ({ size }: { size: string }) => (
@@ -82,7 +82,8 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
       style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1" }}
       _hover={!isDisabled ? { color: hoverColor, textDecoration: "underline", textDecorationSkipInk: "none" } : undefined}
       _focusVisible={!isDisabled ? {
-        outline: "2px solid #009D7B",
+        outline: "2px solid",
+        outlineColor: "focus.brand-default",
         outlineOffset: "4px",
         borderRadius: "4px",
       } : undefined}

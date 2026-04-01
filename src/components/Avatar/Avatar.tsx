@@ -1,10 +1,10 @@
 import { forwardRef } from "react"
 import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
-export type AvatarSize = "md" | "sm" | "xs" | "2xs"
+export type AvatarSize   = "md" | "sm" | "xs" | "2xs"
 export type AvatarColour = "strong" | "neutral" | "subtle" | "mix" | "purple" | "green" | "mocha" | "blue"
-export type AvatarType = "letter" | "icon"
-export type AvatarState = "default" | "alert"
+export type AvatarType   = "letter" | "icon"
+export type AvatarState  = "default" | "alert" | "disabled"
 
 export interface AvatarProps extends HTMLChakraProps<"div"> {
   type?: AvatarType
@@ -17,7 +17,6 @@ export interface AvatarProps extends HTMLChakraProps<"div"> {
   dropdown?: boolean
 }
 
-// Size → { diameter, dropdownSize, fontSize, lineHeight }
 const sizes: Record<AvatarSize, { d: string; arrow: string; fs: string; lh: string }> = {
   md:    { d: "40px", arrow: "24px", fs: "14px", lh: "16px" },
   sm:    { d: "36px", arrow: "20px", fs: "12px", lh: "16px" },
@@ -25,16 +24,31 @@ const sizes: Record<AvatarSize, { d: string; arrow: string; fs: string; lh: stri
   "2xs": { d: "20px", arrow: "12px", fs: "10px", lh: "12px" },
 }
 
-// Colour → { bg, bgHover, bgActive, textColor }
-const colours: Record<AvatarColour, { bg: string; bgHover: string; bgActive: string; textColor: string }> = {
-  strong:  { bg: "#367F94", bgHover: "#578E9E", bgActive: "#2A6373", textColor: "#FFFFFF" },
-  neutral: { bg: "#838894", bgHover: "#9A9FB8", bgActive: "#7C8094", textColor: "#FFFFFF" },
-  subtle:  { bg: "#D8D9E5", bgHover: "#C6C8D8", bgActive: "#BCC0D1", textColor: "#424559" },
-  mix:     { bg: "#5B6AB5", bgHover: "#6B7AC5", bgActive: "#4A5AA5", textColor: "#FFFFFF" },
-  purple:  { bg: "#7C3F9A", bgHover: "#8F4FB0", bgActive: "#6A3585", textColor: "#FFFFFF" },
-  green:   { bg: "#026257", bgHover: "#017B68", bgActive: "#014039", textColor: "#FFFFFF" },
-  mocha:   { bg: "#7A5C4A", bgHover: "#8E6D5A", bgActive: "#664D3D", textColor: "#FFFFFF" },
-  blue:    { bg: "#2B6CB0", bgHover: "#3182CE", bgActive: "#245A97", textColor: "#FFFFFF" },
+interface ColourConfig {
+  bg: string
+  bgHover: string
+  bgActive: string
+  ring: string
+  text: string
+}
+
+// Mix is a gradient in Figma — bg uses CSS variable refs to palette tokens so no
+// raw hex values are hardcoded.
+const MIX_GRADIENT =
+  "linear-gradient(135deg, var(--chakra-colors-teal-600), var(--chakra-colors-lime-500))"
+
+// All colour values reference semantic tokens defined in theme/index.ts.
+// Exceptions: "content.dark.strong" and "content.light.brand-strong" are existing
+// semantic tokens; avatar.*.* tokens were added alongside this component.
+const colours: Record<AvatarColour, ColourConfig> = {
+  strong:  { bg: "avatar.strong.default",  bgHover: "avatar.strong.hover",  bgActive: "avatar.strong.active",  ring: "avatar.strong.ring",  text: "content.dark.strong" },
+  neutral: { bg: "avatar.neutral.default", bgHover: "avatar.neutral.hover", bgActive: "avatar.neutral.active", ring: "avatar.neutral.ring", text: "content.dark.strong" },
+  subtle:  { bg: "avatar.subtle.default",  bgHover: "avatar.subtle.hover",  bgActive: "avatar.subtle.active",  ring: "avatar.subtle.ring",  text: "content.light.brand-strong" },
+  mix:     { bg: MIX_GRADIENT,             bgHover: MIX_GRADIENT,           bgActive: MIX_GRADIENT,            ring: "avatar.subtle.ring",  text: "content.dark.strong" },
+  purple:  { bg: "avatar.purple.default",  bgHover: "avatar.purple.hover",  bgActive: "avatar.purple.active",  ring: "avatar.purple.ring",  text: "content.dark.strong" },
+  green:   { bg: "avatar.green.default",   bgHover: "avatar.green.hover",   bgActive: "avatar.green.active",   ring: "avatar.green.ring",   text: "content.dark.strong" },
+  mocha:   { bg: "avatar.mocha.default",   bgHover: "avatar.mocha.hover",   bgActive: "avatar.mocha.active",   ring: "avatar.mocha.ring",   text: "content.dark.strong" },
+  blue:    { bg: "avatar.blue.default",    bgHover: "avatar.blue.hover",    bgActive: "avatar.blue.active",    ring: "avatar.blue.ring",    text: "content.dark.strong" },
 }
 
 function getInitials(initials?: string, name?: string): string {
@@ -47,10 +61,10 @@ function getInitials(initials?: string, name?: string): string {
 
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
   {
-    type = "letter",
-    colour = "strong",
-    size = "md",
-    state = "default",
+    type     = "letter",
+    colour   = "strong",
+    size     = "md",
+    state    = "default",
     initials,
     name,
     icon,
@@ -59,33 +73,38 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
   },
   ref
 ) {
-  const { d, arrow, fs, lh } = sizes[size]
-  const { bg, bgHover, bgActive, textColor } = colours[colour]
-  const isAlert = state === "alert"
+  const { d, arrow, fs, lh }               = sizes[size]
+  const { bg, bgHover, bgActive, ring, text } = colours[colour]
 
-  const letters = getInitials(initials, name)
+  const isAlert    = state === "alert"
+  const isDisabled = state === "disabled"
+  const letters    = getInitials(initials, name)
+
+  // Disabled overrides colour with the system disabled tokens
+  const resolvedBg   = isDisabled ? "feedback.disabled.bg"     : bg
+  const resolvedText = isDisabled ? "feedback.disabled.strong"  : text
 
   return (
     <chakra.div
       ref={ref}
+      data-group
       display="inline-flex"
       gap="4px"
       alignItems="center"
       justifyContent="center"
       position="relative"
-      cursor="pointer"
+      cursor={isDisabled ? "not-allowed" : "pointer"}
+      pointerEvents={isDisabled ? "none" : undefined}
       fontFamily="Inter, sans-serif"
-      _focusVisible={{
-        outline: "none",
-        "& > div": {
-          borderColor: "#DDFBC6",
-          boxShadow: "0 0 0 2px #009D7B",
-        },
-      }}
-      tabIndex={dropdown ? 0 : undefined}
+      tabIndex={dropdown && !isDisabled ? 0 : undefined}
+      _focusVisible={{ outline: "none" }}
       {...rest}
     >
-      {/* Ring wrapper — shows focus ring */}
+      {/* Ring wrapper
+          Default:       2px transparent border, no padding
+          Active:        2px solid ring colour + 4px padding  (matches Figma active treatment)
+          Focus-visible: 2px solid focus colour + 4px padding
+          Both scale the hit-area outward, not inward, so the circle stays the same size. */}
       <chakra.div
         position="relative"
         display="inline-flex"
@@ -94,28 +113,35 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
         borderRadius="50px"
         border="2px solid transparent"
         flexShrink={0}
+        transition="border-color 0.1s, padding 0.1s"
+        {...(!isDisabled && {
+          _groupActive:       { borderColor: ring,                padding: "4px" },
+          _groupFocusVisible: { borderColor: "focus.brand-default", padding: "4px" },
+        })}
       >
         {/* Background circle */}
         <chakra.div
           w={d}
           h={d}
           borderRadius="full"
-          bg={bg}
+          bg={resolvedBg}
           display="flex"
           alignItems="center"
           justifyContent="center"
           position="relative"
           overflow="hidden"
           transition="background 0.15s"
-          _hover={{ bg: bgHover }}
-          _active={{ bg: bgActive }}
+          {...(!isDisabled && {
+            _groupHover:  { bg: bgHover },
+            _groupActive: { bg: bgActive },
+          })}
         >
           {type === "letter" && (
             <chakra.span
               fontSize={fs}
               fontWeight="500"
               lineHeight={lh}
-              color={textColor}
+              color={resolvedText}
               style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1" }}
               userSelect="none"
             >
@@ -125,7 +151,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
           {type === "icon" && (
             <chakra.span
               fontSize={`calc(${d} * 0.5)`}
-              color={textColor}
+              color={resolvedText}
               display="flex"
               alignItems="center"
               justifyContent="center"
@@ -139,7 +165,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
           )}
         </chakra.div>
 
-        {/* Alert dot — bottom-left, 8px red circle */}
+        {/* Alert dot — bottom-left corner, 8px red circle */}
         {isAlert && (
           <chakra.div
             position="absolute"
@@ -148,14 +174,14 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
             w="8px"
             h="8px"
             borderRadius="full"
-            bg="#C84F25"
+            bg="feedback.critical.default"
             border="1.5px solid white"
             zIndex={1}
           />
         )}
       </chakra.div>
 
-      {/* Dropdown arrow */}
+      {/* Dropdown caret */}
       {dropdown && (
         <chakra.div
           w={arrow}
@@ -163,7 +189,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
           display="flex"
           alignItems="center"
           justifyContent="center"
-          color="#424559"
+          color={isDisabled ? "feedback.disabled.strong" : "content.light.default"}
           flexShrink={0}
         >
           <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none">
