@@ -9,7 +9,7 @@ const meta: Meta<typeof Avatar> = {
   argTypes: {
     colour: {
       control: "select",
-      options: ["strong", "neutral", "subtle", "mix", "purple", "green", "mocha", "blue"],
+      options: ["strong", "neutral", "subtle", "mix"],
     },
     size:  { control: "select", options: ["md", "sm", "xs", "2xs"] },
     type:  { control: "select", options: ["letter", "icon"] },
@@ -42,7 +42,7 @@ export const Colours: Story = {
   name: "Colour Variants",
   render: () => (
     <div style={{ display: "flex", flexWrap: "wrap", gap: 16, fontFamily: "Inter, sans-serif", alignItems: "flex-end" }}>
-      {(["strong", "neutral", "subtle", "mix", "purple", "green", "mocha", "blue"] as const).map((c) => (
+      {(["strong", "neutral", "subtle", "mix"] as const).map((c) => (
         <div key={c} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
           <Avatar initials="JD" colour={c} size="md" />
           <span style={{ fontSize: 11, color: "#7C8094" }}>{c}</span>
@@ -110,11 +110,10 @@ export const InteractionStates: Story = {
       { label: "focus",        props: { "data-focus-visible": true, tabIndex: 0 } },
     ] as const
 
-    const colours = ["strong", "neutral", "subtle", "mix", "purple", "green", "mocha", "blue"] as const
+    const colours = ["strong", "neutral", "subtle", "mix"] as const
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 32, fontFamily: "Inter, sans-serif" }}>
-        {/* Per-colour rows */}
         {colours.map((colour) => (
           <div key={colour} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <span style={{ fontSize: 11, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.06em" }}>
@@ -156,20 +155,15 @@ export const Types: Story = {
 }
 
 // ── Remix Icons ──────────────────────────────────────────────────────────────
-// Remix Icons are available via <i className="ri-*" /> after importing
-// remixicon/fonts/remixicon.css in .storybook/preview.tsx
 
 export const WithRemixIcons: Story = {
   name: "With Remix Icons",
   render: () => {
-    const examples: Array<{ colour: "strong" | "neutral" | "subtle" | "purple" | "green" | "mocha" | "blue"; icon: string; label: string }> = [
+    const examples: Array<{ colour: "strong" | "neutral" | "subtle" | "mix"; icon: string; label: string }> = [
       { colour: "strong",  icon: "ri-user-3-line",       label: "user" },
       { colour: "neutral", icon: "ri-settings-4-line",   label: "settings" },
       { colour: "subtle",  icon: "ri-shield-check-line", label: "shield" },
-      { colour: "purple",  icon: "ri-star-line",         label: "star" },
-      { colour: "green",   icon: "ri-leaf-line",         label: "leaf" },
-      { colour: "mocha",   icon: "ri-heart-line",        label: "heart" },
-      { colour: "blue",    icon: "ri-mail-line",         label: "mail" },
+      { colour: "mix",     icon: "ri-star-line",         label: "star" },
     ]
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 32, fontFamily: "Inter, sans-serif" }}>
@@ -198,7 +192,7 @@ export const WithRemixIcons: Story = {
           <span style={{ fontSize: 11, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.06em" }}>
             Colour variants
           </span>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-end" }}>
+          <div style={{ display: "flex", gap: 16, alignItems: "flex-end" }}>
             {examples.map(({ colour, icon, label }) => (
               <div key={colour} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                 <Avatar
@@ -249,7 +243,7 @@ export const WithDropdown: Story = {
   name: "With Dropdown Caret",
   render: () => (
     <div style={{ display: "flex", gap: 24, fontFamily: "Inter, sans-serif" }}>
-      {(["strong", "neutral", "subtle", "green"] as const).map((c) => (
+      {(["strong", "neutral", "subtle", "mix"] as const).map((c) => (
         <div key={c} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
           <Avatar initials="JD" colour={c} size="md" dropdown />
           <span style={{ fontSize: 11, color: "#7C8094" }}>{c}</span>
@@ -284,10 +278,10 @@ export const AvatarGroup: Story = {
   render: () => {
     const users = [
       { initials: "AT", colour: "strong"  as const },
-      { initials: "BL", colour: "green"   as const },
-      { initials: "CN", colour: "purple"  as const },
-      { initials: "DO", colour: "blue"    as const },
-      { initials: "EK", colour: "mocha"   as const },
+      { initials: "BL", colour: "subtle"  as const },
+      { initials: "CN", colour: "neutral" as const },
+      { initials: "DO", colour: "mix"     as const },
+      { initials: "EK", colour: "strong"  as const },
     ]
     return (
       <div style={{ display: "flex", fontFamily: "Inter, sans-serif" }}>

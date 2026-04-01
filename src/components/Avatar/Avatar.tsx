@@ -2,7 +2,7 @@ import { forwardRef } from "react"
 import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
 export type AvatarSize   = "md" | "sm" | "xs" | "2xs"
-export type AvatarColour = "strong" | "neutral" | "subtle" | "mix" | "purple" | "green" | "mocha" | "blue"
+export type AvatarColour = "strong" | "neutral" | "subtle" | "mix"
 export type AvatarType   = "letter" | "icon"
 export type AvatarState  = "default" | "alert" | "disabled"
 
@@ -45,10 +45,6 @@ const colours: Record<AvatarColour, ColourConfig> = {
   neutral: { bg: "avatar.neutral.default", bgHover: "avatar.neutral.hover", bgActive: "avatar.neutral.active", ring: "avatar.neutral.ring", text: "content.dark.strong" },
   subtle:  { bg: "avatar.subtle.default",  bgHover: "avatar.subtle.hover",  bgActive: "avatar.subtle.active",  ring: "avatar.subtle.ring",  text: "content.light.brand-strong" },
   mix:     { bg: MIX_GRADIENT,             bgHover: MIX_GRADIENT,           bgActive: MIX_GRADIENT,            ring: "avatar.subtle.ring",  text: "content.dark.strong" },
-  purple:  { bg: "avatar.purple.default",  bgHover: "avatar.purple.hover",  bgActive: "avatar.purple.active",  ring: "avatar.purple.ring",  text: "content.dark.strong" },
-  green:   { bg: "avatar.green.default",   bgHover: "avatar.green.hover",   bgActive: "avatar.green.active",   ring: "avatar.green.ring",   text: "content.dark.strong" },
-  mocha:   { bg: "avatar.mocha.default",   bgHover: "avatar.mocha.hover",   bgActive: "avatar.mocha.active",   ring: "avatar.mocha.ring",   text: "content.dark.strong" },
-  blue:    { bg: "avatar.blue.default",    bgHover: "avatar.blue.hover",    bgActive: "avatar.blue.active",    ring: "avatar.blue.ring",    text: "content.dark.strong" },
 }
 
 function getInitials(initials?: string, name?: string): string {
@@ -186,15 +182,14 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
         <chakra.div
           w={arrow}
           h={arrow}
+          fontSize={arrow}
           display="flex"
           alignItems="center"
           justifyContent="center"
           color={isDisabled ? "feedback.disabled.strong" : "content.light.default"}
           flexShrink={0}
         >
-          <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none">
-            <path d="M7 10l5 5 5-5H7Z" fill="currentColor" />
-          </svg>
+          <i className="ri-arrow-down-s-line" style={{ lineHeight: 1 }} />
         </chakra.div>
       )}
     </chakra.div>
