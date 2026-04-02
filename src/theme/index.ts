@@ -266,6 +266,10 @@ const config = defineConfig({
         "feedback.disabled.medium": { value: "{colors.grey.200}" },
         "feedback.disabled.strong": { value: "{colors.grey.400}" },
 
+        // ── Interaction support ──────────────────────────────────────────────
+        "interaction.support.disabled-bg": { value: "#EDEDED" },
+        "interaction.support.disabled":    { value: "{colors.grey.200}" },
+
         // ── Focus ────────────────────────────────────────────────────────────
         "focus.brand-default":    { value: "{colors.green.500}" },
         "focus.brand-subtle":     { value: "{colors.green.100}" },

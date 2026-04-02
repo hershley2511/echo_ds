@@ -9,6 +9,7 @@ export interface ButtonProps extends HTMLChakraProps<"button"> {
   variant?:     ButtonVariant
   colorScheme?: ButtonColorScheme
   size?:        ButtonSize
+  loading?:     boolean
   /** Forces a visual interaction state without mouse events — for Storybook stories only */
   forceInteractionState?: "hover" | "active"
 }
@@ -58,8 +59,8 @@ const styles: StyleMap = {
   },
   critical: {
     solid:   s(["interaction.critical.default","content.dark.strong",        "interaction.critical.default"], ["interaction.critical.hover","interaction.critical.hover"], ["interaction.critical.active","interaction.critical.active"]),
-    outline: s(["transparent",                 "interaction.critical.default","interaction.critical.default"], ["feedback.critical.subtle", "interaction.critical.default"], ["red.100",                 "interaction.critical.default"]),
-    clear:   s(["transparent",                 "interaction.critical.default","transparent"                ], ["feedback.critical.subtle",  "transparent"              ], ["red.100",                    "transparent"               ]),
+    outline: s(["transparent",                 "interaction.critical.default","interaction.critical.default"], ["rgba(200,79,37,0.1)", "interaction.critical.default"], ["rgba(200,79,37,0.2)", "interaction.critical.default"]),
+    clear:   s(["transparent",                 "interaction.critical.default","transparent"                ], ["rgba(200,79,37,0.1)",  "transparent"              ], ["rgba(200,79,37,0.2)",  "transparent"               ]),
   },
   neutral: {
     solid:   s(["interaction.neutral.default", "content.light.default",      "interaction.neutral.default"], ["interaction.neutral.hover", "interaction.neutral.hover"], ["interaction.neutral.active", "interaction.neutral.active"]),
@@ -83,12 +84,43 @@ const styles: StyleMap = {
   },
 }
 
+// ── Spinner ──────────────────────────────────────────────────────────────────
+const spinKeyframes = {
+  "@keyframes echo-btn-spin": {
+    from: { transform: "rotate(0deg)" },
+    to:   { transform: "rotate(360deg)" },
+  },
+}
+
+function Spinner() {
+  return (
+    <chakra.svg
+      viewBox="0 0 24 24"
+      fill="none"
+      w="24px"
+      h="24px"
+      flexShrink={0}
+      color="content.light.default"
+      sx={{ ...spinKeyframes, animation: "echo-btn-spin 0.8s linear infinite" }}
+    >
+      <circle
+        cx="12" cy="12" r="9"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeDasharray="42 14"
+      />
+    </chakra.svg>
+  )
+}
+
 // ── Component ────────────────────────────────────────────────────────────────
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   {
     variant = "solid",
     colorScheme = "brand",
     size = "md",
+    loading,
     forceInteractionState,
     children,
     disabled,
@@ -101,11 +133,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const [isHovered, setIsHovered] = useState(false)
   const [isPressed, setIsPressed] = useState(false)
 
-  const hovered = forceInteractionState === "hover"  || isHovered
-  const pressed = forceInteractionState === "active" || isPressed
+  const isInert = disabled || loading
+
+  const hovered = !isInert && (forceInteractionState === "hover"  || isHovered)
+  const pressed = !isInert && (forceInteractionState === "active" || isPressed)
 
   const stateKey = pressed ? "active" : hovered ? "hover" : "default"
-  const { bg, color, borderColor } = styles[colorScheme][variant][stateKey]
+
+  const { bg, color, borderColor } = isInert
+    ? { bg: "interaction.support.disabled-bg", color: "interaction.support.disabled", borderColor: "interaction.support.disabled-bg" }
+    : styles[colorScheme][variant][stateKey]
 
   return (
     <chakra.button
@@ -118,9 +155,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       fontFamily="Inter, sans-serif"
       fontWeight="500"
       letterSpacing="-0.096px"
-      cursor={disabled ? "not-allowed" : "pointer"}
-      opacity={disabled ? 0.4 : 1}
-      transition="background 0.15s, border-color 0.15s, opacity 0.15s"
+      cursor={isInert ? "not-allowed" : "pointer"}
+      transition="background 0.15s, border-color 0.15s"
       outline="none"
       _focusVisible={{
         ring: "2px",
@@ -129,19 +165,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       }}
       // Size
       {...sizes[size]}
-      // Resolved interaction state (JS-driven)
+      // Resolved state
       bg={bg}
       color={color}
       borderColor={borderColor}
       // Event handlers
-      onMouseEnter={() => { if (!disabled) setIsHovered(true) }}
+      onMouseEnter={() => { if (!isInert) setIsHovered(true) }}
       onMouseLeave={() => { setIsHovered(false); setIsPressed(false) }}
-      onMouseDown={() => { if (!disabled) setIsPressed(true) }}
+      onMouseDown={() => { if (!isInert) setIsPressed(true) }}
       onMouseUp={() => setIsPressed(false)}
-      disabled={disabled}
+      disabled={disabled || loading}
       {...rest}
     >
-      {children}
+      {loading ? <Spinner /> : children}
     </chakra.button>
   )
 })

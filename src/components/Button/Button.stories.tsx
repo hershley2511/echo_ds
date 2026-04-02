@@ -23,6 +23,7 @@ const meta: Meta<typeof Button> = {
       description: "Height and padding scale",
     },
     disabled: { control: "boolean" },
+    loading:  { control: "boolean" },
     children: { control: "text" },
   },
 }
@@ -102,24 +103,38 @@ export const Sizes: Story = {
 }
 
 // ── Interaction states ────────────────────────────────────────────────────────
+const interactionColorSchemes: { label: string; scheme: ButtonColorScheme; bg?: string }[] = [
+  { label: "Brand",    scheme: "brand"    },
+  { label: "Critical", scheme: "critical" },
+]
+
 export const InteractionStates: Story = {
   name: "Interaction States",
   parameters: { controls: { disable: true } },
   render: () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      {(["default", "hover", "active"] as const).map((state) => (
-        <div key={state} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <span style={{ width: 64, fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase" }}>{state}</span>
-          {(["solid", "outline", "clear"] as const).map((variant) => (
-            <Button
-              key={variant}
-              variant={variant}
-              colorScheme="brand"
-              forceInteractionState={state === "default" ? undefined : state}
-            >
-              Brand / {variant}
-            </Button>
-          ))}
+    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+      {interactionColorSchemes.map(({ label, scheme }) => (
+        <div key={scheme}>
+          <p style={{ margin: "0 0 12px", fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase", letterSpacing: 1 }}>
+            {label}
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {(["default", "hover", "active"] as const).map((state) => (
+              <div key={state} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                <span style={{ width: 64, fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase" }}>{state}</span>
+                {(["solid", "outline", "clear"] as const).map((variant) => (
+                  <Button
+                    key={variant}
+                    variant={variant}
+                    colorScheme={scheme}
+                    forceInteractionState={state === "default" ? undefined : state}
+                  >
+                    {label} / {variant}
+                  </Button>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       ))}
     </div>
@@ -130,9 +145,31 @@ export const InteractionStates: Story = {
 export const Disabled: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
-    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-      {(["brand", "subtle", "success", "critical", "neutral"] as const).map((cs) => (
-        <Button key={cs} colorScheme={cs} disabled>{cs}</Button>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {(["solid", "outline", "clear"] as const).map((variant) => (
+        <div key={variant} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <span style={{ width: 64, fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase" }}>{variant}</span>
+          {(["brand", "subtle", "success", "critical", "neutral"] as const).map((cs) => (
+            <Button key={cs} variant={variant} colorScheme={cs} disabled>{cs}</Button>
+          ))}
+        </div>
+      ))}
+    </div>
+  ),
+}
+
+// ── Loading ──────────────────────────────────────────────────────────────────
+export const Loading: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {(["solid", "outline", "clear"] as const).map((variant) => (
+        <div key={variant} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <span style={{ width: 64, fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase" }}>{variant}</span>
+          {(["brand", "subtle", "success", "critical", "neutral"] as const).map((cs) => (
+            <Button key={cs} variant={variant} colorScheme={cs} loading>{cs}</Button>
+          ))}
+        </div>
       ))}
     </div>
   ),
