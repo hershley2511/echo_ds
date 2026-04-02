@@ -37,6 +37,8 @@ export const Playground: Story = {
     variant: "solid",
     colorScheme: "brand",
     size: "md",
+    disabled: false,
+    loading: false,
     children: "Button",
   },
 }
