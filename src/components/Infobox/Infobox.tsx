@@ -1,57 +1,179 @@
 import { forwardRef } from "react"
 import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
-export type InfoboxVariant = "info" | "success" | "warning" | "critical" | "neutral"
+export type InfoboxType = "informational" | "warning" | "error" | "success"
+export type InfoboxSize = "md" | "sm"
+export type InfoboxLeading = "icon" | "emoji"
 
 export interface InfoboxProps extends HTMLChakraProps<"div"> {
-  variant?: InfoboxVariant
+  type?: InfoboxType
+  size?: InfoboxSize
+  leading?: InfoboxLeading
   title?: string
-  icon?: React.ReactNode
+  emoji?: string
 }
 
-const variantStyles: Record<InfoboxVariant, { bg: string; borderColor: string; iconColor: string; defaultIcon: string }> = {
-  info:     { bg: "#EBF8FF", borderColor: "#BEE3F8", iconColor: "#2B6CB0", defaultIcon: "ri-information-line" },
-  success:  { bg: "#F1FFE5", borderColor: "#BBF0BB", iconColor: "#009D7B", defaultIcon: "ri-check-line" },
-  warning:  { bg: "#FFFAE2", borderColor: "#FFE89A", iconColor: "#8B6005", defaultIcon: "ri-alert-line" },
-  critical: { bg: "#FFE8E0", borderColor: "#FFCAB5", iconColor: "#C84F25", defaultIcon: "ri-close-circle-line" },
-  neutral:  { bg: "slate.100", borderColor: "grey.100", iconColor: "slate.700", defaultIcon: "ri-information-line" },
+// ── Per-type tokens ───────────────────────────────────────────────────────────
+const typeTokens: Record<InfoboxType, { bg: string; iconColor: string; iconClass: string }> = {
+  informational: {
+    bg: "feedback.info.subtle",
+    iconColor: "feedback.info.strong",
+    iconClass: "ri-information-fill",
+  },
+  warning: {
+    bg: "feedback.warning.subtle",
+    iconColor: "feedback.warning.strong",
+    iconClass: "ri-error-warning-fill",
+  },
+  error: {
+    bg: "feedback.critical.subtle",
+    iconColor: "feedback.critical.default",
+    iconClass: "ri-error-warning-fill",
+  },
+  success: {
+    bg: "feedback.success.subtle",
+    iconColor: "feedback.success.default",
+    iconClass: "ri-checkbox-circle-fill",
+  },
 }
 
+// ── Size tokens ───────────────────────────────────────────────────────────────
+const sizeTokens: Record<
+  InfoboxSize,
+  {
+    padding: string
+    gap: string
+    iconSize: string
+    iconPaddingTop: string
+    contentGap: string
+    titleFontSize: string
+    titleLineHeight: string
+    titleLetterSpacing: string
+    bodyFontSize: string
+    bodyLineHeight: string
+    bodyLetterSpacing: string
+    emojiFontSize: string
+    emojiLineHeight: string
+    emojiLetterSpacing: string
+  }
+> = {
+  md: {
+    padding: "16px",
+    gap: "8px",
+    iconSize: "24px",
+    iconPaddingTop: "0",
+    contentGap: "8px",
+    titleFontSize: "16px",
+    titleLineHeight: "24px",
+    titleLetterSpacing: "-0.096px",
+    bodyFontSize: "16px",
+    bodyLineHeight: "24px",
+    bodyLetterSpacing: "-0.176px",
+    emojiFontSize: "18px",
+    emojiLineHeight: "24px",
+    emojiLetterSpacing: "-0.252px",
+  },
+  sm: {
+    padding: "12px 10px",
+    gap: "8px",
+    iconSize: "16px",
+    iconPaddingTop: "2px",
+    contentGap: "4px",
+    titleFontSize: "14px",
+    titleLineHeight: "16px",
+    titleLetterSpacing: "0",
+    bodyFontSize: "14px",
+    bodyLineHeight: "20px",
+    bodyLetterSpacing: "0",
+    emojiFontSize: "14px",
+    emojiLineHeight: "16px",
+    emojiLetterSpacing: "0",
+  },
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 export const Infobox = forwardRef<HTMLDivElement, InfoboxProps>(function Infobox(
-  { variant = "info", title, icon, children, ...rest },
+  {
+    type = "informational",
+    size = "md",
+    leading = "icon",
+    title,
+    emoji = "🎉",
+    children,
+    ...rest
+  },
   ref
 ) {
-  const { bg, borderColor, iconColor, defaultIcon } = variantStyles[variant]
+  const { bg, iconColor, iconClass } = typeTokens[type]
+  const s = sizeTokens[size]
 
   return (
     <chakra.div
       ref={ref}
       display="flex"
-      gap="12px"
-      p="16px"
+      alignItems="flex-start"
+      gap={s.gap}
+      padding={s.padding}
       bg={bg}
-      border="1px solid"
-      borderColor={borderColor}
       borderRadius="8px"
       fontFamily="Inter, sans-serif"
       {...rest}
     >
+      {/* ── Leading ── */}
+      {leading === "emoji" ? (
+        <chakra.p
+          flexShrink={0}
+          fontWeight="500"
+          fontStyle="normal"
+          fontSize={s.emojiFontSize}
+          lineHeight={s.emojiLineHeight}
+          letterSpacing={s.emojiLetterSpacing}
+          style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1" }}
+        >
+          {emoji}
+        </chakra.p>
+      ) : (
+        <chakra.div
+          flexShrink={0}
+          paddingTop={s.iconPaddingTop}
+          color={iconColor}
+          width={s.iconSize}
+          height={s.iconSize}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <i className={iconClass} style={{ fontSize: s.iconSize, lineHeight: 1 }} />
+        </chakra.div>
+      )}
+
+      {/* ── Content ── */}
       <chakra.div
-        color={iconColor}
-        fontSize="16px"
-        fontWeight="700"
-        flexShrink={0}
-        lineHeight="1.4"
+        display="flex"
+        flexDirection="column"
+        flex="1 0 0"
+        gap={s.contentGap}
+        color="content.light.default"
       >
-        {icon ?? <i className={defaultIcon} style={{ lineHeight: 1 }} />}
-      </chakra.div>
-      <chakra.div display="flex" flexDir="column" gap="4px">
         {title && (
-          <chakra.p m={0} fontSize="14px" fontWeight="600" color="slate.800" lineHeight="1.4">
+          <chakra.p
+            margin={0}
+            fontWeight="600"
+            fontSize={s.titleFontSize}
+            lineHeight={s.titleLineHeight}
+            letterSpacing={s.titleLetterSpacing}
+            style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1" }}
+          >
             {title}
           </chakra.p>
         )}
-        <chakra.div fontSize="13px" color="slate.700" lineHeight="1.5">
+        <chakra.div
+          fontSize={s.bodyFontSize}
+          lineHeight={s.bodyLineHeight}
+          letterSpacing={s.bodyLetterSpacing}
+          fontWeight="400"
+          style={{ fontFeatureSettings: "'cv05' 1, 'lnum' 1, 'tnum' 1" }}
+        >
           {children}
         </chakra.div>
       </chakra.div>
