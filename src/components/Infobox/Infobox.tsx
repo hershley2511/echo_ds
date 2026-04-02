@@ -41,7 +41,9 @@ const typeTokens: Record<InfoboxType, { bg: string; iconColor: string; iconClass
 const sizeTokens: Record<
   InfoboxSize,
   {
-    padding: string
+    p?: string
+    px?: string
+    py?: string
     gap: string
     iconSize: string
     iconPaddingTop: string
@@ -58,11 +60,11 @@ const sizeTokens: Record<
   }
 > = {
   md: {
-    padding: "16px",
-    gap: "8px",
+    p: "4",           // spacing.4 = 16px
+    gap: "2",         // spacing.2 = 8px
     iconSize: "24px",
     iconPaddingTop: "0",
-    contentGap: "8px",
+    contentGap: "1",  // spacing.1 = 4px (Figma: spacing/1)
     titleFontSize: "16px",
     titleLineHeight: "24px",
     titleLetterSpacing: "-0.096px",
@@ -74,11 +76,12 @@ const sizeTokens: Record<
     emojiLetterSpacing: "-0.252px",
   },
   sm: {
-    padding: "12px 10px",
-    gap: "8px",
+    px: "2.5",        // spacing.2.5 = 10px
+    py: "3",          // spacing.3 = 12px
+    gap: "2",         // spacing.2 = 8px
     iconSize: "16px",
-    iconPaddingTop: "2px",
-    contentGap: "4px",
+    iconPaddingTop: "0.5", // spacing.0.5 = 2px
+    contentGap: "1",  // spacing.1 = 4px
     titleFontSize: "14px",
     titleLineHeight: "16px",
     titleLetterSpacing: "0",
@@ -113,7 +116,9 @@ export const Infobox = forwardRef<HTMLDivElement, InfoboxProps>(function Infobox
       display="flex"
       alignItems="flex-start"
       gap={s.gap}
-      padding={s.padding}
+      p={s.p}
+      px={s.px}
+      py={s.py}
       bg={bg}
       borderRadius="8px"
       fontFamily="Inter, sans-serif"

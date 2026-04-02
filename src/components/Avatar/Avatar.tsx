@@ -99,7 +99,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
     <chakra.div
       ref={ref}
       display="inline-flex"
-      gap="4px"
+      gap="1"
       alignItems="center"
       justifyContent="center"
       position="relative"
