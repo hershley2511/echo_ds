@@ -11,9 +11,10 @@ const DefaultIcon = ({ size = 16 }: { size?: number }) => (
 
 // ── Storybook-only story args extending Button props ─────────────────────────
 interface PlaygroundArgs {
-  showLeadingIcon:  boolean
-  showTrailingIcon: boolean
-  iconSrc:          string
+  showLeadingIcon:   boolean
+  showTrailingIcon:  boolean
+  leadingIconSrc:    string
+  trailingIconSrc:   string
 }
 
 const meta: Meta<typeof Button> = {
@@ -63,7 +64,8 @@ export const Playground: StoryObj<typeof Button & PlaygroundArgs> = {
     children: "Button",
     showLeadingIcon:  false,
     showTrailingIcon: false,
-    iconSrc: "",
+    leadingIconSrc:  "",
+    trailingIconSrc: "",
   },
   argTypes: {
     showLeadingIcon: {
@@ -74,21 +76,28 @@ export const Playground: StoryObj<typeof Button & PlaygroundArgs> = {
       control: "boolean",
       description: "Show a trailing (right) icon",
     },
-    iconSrc: {
+    leadingIconSrc: {
       control: { type: "file", accept: ".svg,.png,.jpg,.jpeg,.webp" },
-      description: "Upload a custom icon image to preview in the button. Applies to both leading and trailing icons when enabled.",
+      description: "Upload a custom icon for the leading slot. Falls back to a default icon if empty.",
+    },
+    trailingIconSrc: {
+      control: { type: "file", accept: ".svg,.png,.jpg,.jpeg,.webp" },
+      description: "Upload a custom icon for the trailing slot. Falls back to a default icon if empty.",
     },
   },
-  render: ({ showLeadingIcon, showTrailingIcon, iconSrc, ...args }) => {
-    const iconNode = iconSrc
-      ? <img src={iconSrc} alt="" aria-hidden="true" style={{ width: "1em", height: "1em", objectFit: "contain" }} />
+  render: ({ showLeadingIcon, showTrailingIcon, leadingIconSrc, trailingIconSrc, ...args }) => {
+    const leading = leadingIconSrc
+      ? <img src={leadingIconSrc} alt="" aria-hidden="true" style={{ width: "1em", height: "1em", objectFit: "contain" }} />
+      : <DefaultIcon size={16} />
+    const trailing = trailingIconSrc
+      ? <img src={trailingIconSrc} alt="" aria-hidden="true" style={{ width: "1em", height: "1em", objectFit: "contain" }} />
       : <DefaultIcon size={16} />
 
     return (
       <Button
         {...args}
-        leadingIcon={showLeadingIcon ? iconNode : undefined}
-        trailingIcon={showTrailingIcon ? iconNode : undefined}
+        leadingIcon={showLeadingIcon ? leading : undefined}
+        trailingIcon={showTrailingIcon ? trailing : undefined}
       />
     )
   },

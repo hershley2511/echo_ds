@@ -9,7 +9,8 @@ const DefaultIcon = ({ size = 16 }: { size?: number }) => (
 )
 
 interface PlaygroundArgs {
-  iconSrc: string
+  leadingIconSrc:  string
+  trailingIconSrc: string
 }
 
 const meta: Meta<typeof Badge> = {
@@ -38,9 +39,10 @@ export const Playground: StoryObj<typeof Badge & PlaygroundArgs> = {
     colour: "Brand",
     size: "sm",
     background: true,
-    showLeadingIcon: false,
+    showLeadingIcon:  false,
     showTrailingIcon: false,
-    iconSrc: "",
+    leadingIconSrc:  "",
+    trailingIconSrc: "",
   },
   argTypes: {
     showLeadingIcon: {
@@ -51,14 +53,21 @@ export const Playground: StoryObj<typeof Badge & PlaygroundArgs> = {
       control: "boolean",
       description: "Show a trailing (right) icon",
     },
-    iconSrc: {
+    leadingIconSrc: {
       control: { type: "file", accept: ".svg,.png,.jpg,.jpeg,.webp" },
-      description: "Upload a custom icon image. Applies to both leading and trailing slots when enabled.",
+      description: "Upload a custom icon for the leading slot. Falls back to a default icon if empty.",
+    },
+    trailingIconSrc: {
+      control: { type: "file", accept: ".svg,.png,.jpg,.jpeg,.webp" },
+      description: "Upload a custom icon for the trailing slot. Falls back to a default icon if empty.",
     },
   },
-  render: ({ iconSrc, showLeadingIcon, showTrailingIcon, ...args }) => {
-    const iconNode = iconSrc
-      ? <img src={iconSrc} alt="" aria-hidden="true" style={{ width: "1em", height: "1em", objectFit: "contain" }} />
+  render: ({ leadingIconSrc, trailingIconSrc, showLeadingIcon, showTrailingIcon, ...args }) => {
+    const leading = leadingIconSrc
+      ? <img src={leadingIconSrc} alt="" aria-hidden="true" style={{ width: "1em", height: "1em", objectFit: "contain" }} />
+      : <DefaultIcon size={14} />
+    const trailing = trailingIconSrc
+      ? <img src={trailingIconSrc} alt="" aria-hidden="true" style={{ width: "1em", height: "1em", objectFit: "contain" }} />
       : <DefaultIcon size={14} />
 
     return (
@@ -66,8 +75,8 @@ export const Playground: StoryObj<typeof Badge & PlaygroundArgs> = {
         {...args}
         showLeadingIcon={showLeadingIcon}
         showTrailingIcon={showTrailingIcon}
-        leadingIcon={iconNode}
-        trailingIcon={iconNode}
+        leadingIcon={leading}
+        trailingIcon={trailing}
       />
     )
   },
