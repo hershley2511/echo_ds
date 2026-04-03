@@ -4,18 +4,19 @@ import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 export type ButtonVariant     = "solid" | "outline" | "clear"
 export type ButtonColorScheme = "brand" | "subtle" | "success" | "critical" | "neutral" | "inverse" | "warning" | "white"
 export type ButtonSize        = "xxs" | "xs" | "sm" | "md" | "lg"
+export type ButtonState       = "default" | "disabled" | "loading"
 
 export interface ButtonProps extends HTMLChakraProps<"button"> {
   variant?:     ButtonVariant
   colorScheme?: ButtonColorScheme
   size?:        ButtonSize
-  loading?:     boolean
+  state?:       ButtonState
   /** Forces a visual interaction state without mouse events — for Storybook stories only */
   forceInteractionState?: "hover" | "active"
 }
 
 // ── Size tokens ──────────────────────────────────────────────────────────────
-const sizes: Record<ButtonSize, HTMLChakraProps<"button">> = {
+const sizes: Record<ButtonSize, HTMLChakraProps<"button"> & { gap: string }> = {
   xxs: { h: "24px", px: "2",   fontSize: "12px", gap: "1"   },
   xs:  { h: "32px", px: "2.5", fontSize: "12px", gap: "1"   },
   sm:  { h: "36px", px: "3",   fontSize: "14px", gap: "1.5" },
@@ -85,32 +86,34 @@ const styles: StyleMap = {
 }
 
 // ── Spinner ──────────────────────────────────────────────────────────────────
-const spinKeyframes = {
-  "@keyframes echo-btn-spin": {
-    from: { transform: "rotate(0deg)" },
-    to:   { transform: "rotate(360deg)" },
-  },
-}
-
-function Spinner() {
+function Spinner({ size }: { size: ButtonSize }) {
+  const dim = size === "xxs" || size === "xs" ? "16px" : size === "sm" ? "18px" : "20px"
   return (
-    <chakra.svg
-      viewBox="0 0 24 24"
-      fill="none"
-      w="24px"
-      h="24px"
-      flexShrink={0}
-      color="content.light.default"
-      sx={{ ...spinKeyframes, animation: "echo-btn-spin 0.8s linear infinite" }}
+    <chakra.span
+      position="absolute"
+      inset="0"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      pointerEvents="none"
     >
-      <circle
-        cx="12" cy="12" r="9"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeDasharray="42 14"
+      <chakra.span
+        display="block"
+        w={dim}
+        h={dim}
+        borderRadius="full"
+        border="2px solid"
+        borderColor="content.light.default"
+        borderTopColor="transparent"
+        sx={{
+          "@keyframes echo-btn-spin": {
+            from: { transform: "rotate(0deg)" },
+            to:   { transform: "rotate(360deg)" },
+          },
+          animation: "echo-btn-spin 0.75s linear infinite",
+        }}
       />
-    </chakra.svg>
+    </chakra.span>
   )
 }
 
@@ -120,7 +123,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     variant = "solid",
     colorScheme = "brand",
     size = "md",
-    loading,
+    state = "default",
     forceInteractionState,
     children,
     disabled,
@@ -133,7 +136,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const [isHovered, setIsHovered] = useState(false)
   const [isPressed, setIsPressed] = useState(false)
 
-  const isInert = disabled || loading
+  const isDisabled = state === "disabled" || disabled
+  const isLoading  = state === "loading"
+  const isInert    = isDisabled || isLoading
 
   const hovered = !isInert && (forceInteractionState === "hover"  || isHovered)
   const pressed = !isInert && (forceInteractionState === "active" || isPressed)
@@ -144,12 +149,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     ? { bg: "interaction.support.disabled-bg", color: "interaction.support.disabled", borderColor: "interaction.support.disabled-bg" }
     : styles[colorScheme][variant][stateKey]
 
+  const { gap, ...sizeStyles } = sizes[size]
+
   return (
     <chakra.button
       ref={ref}
       display="inline-flex"
       alignItems="center"
       justifyContent="center"
+      position="relative"
       borderRadius="8px"
       border="1px solid"
       fontFamily="Inter, sans-serif"
@@ -163,8 +171,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         ringColor: "focus.brand-default",
         ringOffset: "2px",
       }}
-      // Size
-      {...sizes[size]}
+      // Size (gap excluded — applied to children wrapper instead)
+      {...sizeStyles}
       // Resolved state
       bg={bg}
       color={color}
@@ -174,10 +182,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       onMouseLeave={() => { setIsHovered(false); setIsPressed(false) }}
       onMouseDown={() => { if (!isInert) setIsPressed(true) }}
       onMouseUp={() => setIsPressed(false)}
-      disabled={disabled || loading}
+      disabled={isInert}
       {...rest}
     >
-      {loading ? <Spinner /> : children}
+      {/* Children stay in DOM when loading to preserve button width */}
+      <chakra.span
+        display="inline-flex"
+        alignItems="center"
+        gap={gap}
+        style={{ opacity: isLoading ? 0 : 1 }}
+      >
+        {children}
+      </chakra.span>
+      {isLoading && <Spinner size={size} />}
     </chakra.button>
   )
 })

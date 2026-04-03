@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { Button } from "./Button"
-import type { ButtonColorScheme, ButtonVariant, ButtonSize } from "./Button"
+import type { ButtonColorScheme, ButtonVariant, ButtonSize, ButtonState } from "./Button"
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
@@ -22,9 +22,14 @@ const meta: Meta<typeof Button> = {
       options: ["xxs", "xs", "sm", "md", "lg"] satisfies ButtonSize[],
       description: "Height and padding scale",
     },
-    disabled: { control: "boolean" },
-    loading:  { control: "boolean" },
+    state: {
+      control: "select",
+      options: ["default", "disabled", "loading"] satisfies ButtonState[],
+      description: "Semantic component state. Hover / active are driven by mouse — interact with the button in the canvas to trigger them.",
+    },
     children: { control: "text" },
+    // Hide native HTML prop from controls — use `state` instead
+    disabled: { table: { disable: true } },
   },
 }
 
@@ -37,8 +42,7 @@ export const Playground: Story = {
     variant: "solid",
     colorScheme: "brand",
     size: "md",
-    disabled: false,
-    loading: false,
+    state: "default",
     children: "Button",
   },
 }
@@ -105,7 +109,7 @@ export const Sizes: Story = {
 }
 
 // ── Interaction states ────────────────────────────────────────────────────────
-const interactionColorSchemes: { label: string; scheme: ButtonColorScheme; bg?: string }[] = [
+const interactionColorSchemes: { label: string; scheme: ButtonColorScheme }[] = [
   { label: "Brand",    scheme: "brand"    },
   { label: "Critical", scheme: "critical" },
 ]
@@ -121,15 +125,15 @@ export const InteractionStates: Story = {
             {label}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {(["default", "hover", "active"] as const).map((state) => (
-              <div key={state} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                <span style={{ width: 64, fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase" }}>{state}</span>
+            {(["default", "hover", "active"] as const).map((iState) => (
+              <div key={iState} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                <span style={{ width: 64, fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase" }}>{iState}</span>
                 {(["solid", "outline", "clear"] as const).map((variant) => (
                   <Button
                     key={variant}
                     variant={variant}
                     colorScheme={scheme}
-                    forceInteractionState={state === "default" ? undefined : state}
+                    forceInteractionState={iState === "default" ? undefined : iState}
                   >
                     {label} / {variant}
                   </Button>
@@ -152,7 +156,7 @@ export const Disabled: Story = {
         <div key={variant} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
           <span style={{ width: 64, fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase" }}>{variant}</span>
           {(["brand", "subtle", "success", "critical", "neutral"] as const).map((cs) => (
-            <Button key={cs} variant={variant} colorScheme={cs} disabled>{cs}</Button>
+            <Button key={cs} variant={variant} colorScheme={cs} state="disabled">{cs}</Button>
           ))}
         </div>
       ))}
@@ -169,7 +173,7 @@ export const Loading: Story = {
         <div key={variant} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
           <span style={{ width: 64, fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase" }}>{variant}</span>
           {(["brand", "subtle", "success", "critical", "neutral"] as const).map((cs) => (
-            <Button key={cs} variant={variant} colorScheme={cs} loading>{cs}</Button>
+            <Button key={cs} variant={variant} colorScheme={cs} state="loading">{cs}</Button>
           ))}
         </div>
       ))}
