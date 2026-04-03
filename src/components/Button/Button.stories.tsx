@@ -2,6 +2,20 @@ import type { Meta, StoryObj } from "@storybook/react"
 import { Button } from "./Button"
 import type { ButtonColorScheme, ButtonVariant, ButtonSize, ButtonState } from "./Button"
 
+// ── Default icon (RemixIcon star, inline SVG) ─────────────────────────────────
+const DefaultIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+  </svg>
+)
+
+// ── Storybook-only story args extending Button props ─────────────────────────
+interface PlaygroundArgs {
+  showLeadingIcon:  boolean
+  showTrailingIcon: boolean
+  iconSrc:          string
+}
+
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
   component: Button,
@@ -30,6 +44,9 @@ const meta: Meta<typeof Button> = {
     children: { control: "text" },
     // Hide native HTML prop from controls — use `state` instead
     disabled: { table: { disable: true } },
+    // Hide ReactNode props — controlled via story-level toggles in Playground
+    leadingIcon:  { table: { disable: true } },
+    trailingIcon: { table: { disable: true } },
   },
 }
 
@@ -37,13 +54,43 @@ export default meta
 type Story = StoryObj<typeof Button>
 
 // ── Playground ───────────────────────────────────────────────────────────────
-export const Playground: Story = {
+export const Playground: StoryObj<typeof Button & PlaygroundArgs> = {
   args: {
     variant: "solid",
     colorScheme: "brand",
     size: "md",
     state: "default",
     children: "Button",
+    showLeadingIcon:  false,
+    showTrailingIcon: false,
+    iconSrc: "",
+  },
+  argTypes: {
+    showLeadingIcon: {
+      control: "boolean",
+      description: "Show a leading (left) icon",
+    },
+    showTrailingIcon: {
+      control: "boolean",
+      description: "Show a trailing (right) icon",
+    },
+    iconSrc: {
+      control: { type: "file", accept: ".svg,.png,.jpg,.jpeg,.webp" },
+      description: "Upload a custom icon image to preview in the button. Applies to both leading and trailing icons when enabled.",
+    },
+  },
+  render: ({ showLeadingIcon, showTrailingIcon, iconSrc, ...args }) => {
+    const iconNode = iconSrc
+      ? <img src={iconSrc} alt="" aria-hidden="true" style={{ width: "1em", height: "1em", objectFit: "contain" }} />
+      : <DefaultIcon size={16} />
+
+    return (
+      <Button
+        {...args}
+        leadingIcon={showLeadingIcon ? iconNode : undefined}
+        trailingIcon={showTrailingIcon ? iconNode : undefined}
+      />
+    )
   },
 }
 

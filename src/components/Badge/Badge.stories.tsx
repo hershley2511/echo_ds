@@ -1,6 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { Badge } from "./Badge"
 
+// ── Default icon placeholder ──────────────────────────────────────────────────
+const DefaultIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+  </svg>
+)
+
+interface PlaygroundArgs {
+  iconSrc: string
+}
+
 const meta: Meta<typeof Badge> = {
   title: "Components/Badge",
   component: Badge,
@@ -11,14 +22,55 @@ const meta: Meta<typeof Badge> = {
     colour: { control: "select", options: ["Brand", "Success", "Warning", "Critical", "Neutral", "Info"] },
     size: { control: "select", options: ["sm", "xs"] },
     border: { control: "select", options: ["Default", "Rounded"] },
+    // Hide ReactNode props — managed via Playground render
+    leadingIcon:  { table: { disable: true } },
+    trailingIcon: { table: { disable: true } },
   },
 }
 
 export default meta
 type Story = StoryObj<typeof Badge>
 
-export const Playground: Story = {
-  args: { children: "Badge", variant: "Subtle", colour: "Brand", size: "sm", background: true },
+export const Playground: StoryObj<typeof Badge & PlaygroundArgs> = {
+  args: {
+    children: "Badge",
+    variant: "Subtle",
+    colour: "Brand",
+    size: "sm",
+    background: true,
+    showLeadingIcon: false,
+    showTrailingIcon: false,
+    iconSrc: "",
+  },
+  argTypes: {
+    showLeadingIcon: {
+      control: "boolean",
+      description: "Show a leading (left) icon",
+    },
+    showTrailingIcon: {
+      control: "boolean",
+      description: "Show a trailing (right) icon",
+    },
+    iconSrc: {
+      control: { type: "file", accept: ".svg,.png,.jpg,.jpeg,.webp" },
+      description: "Upload a custom icon image. Applies to both leading and trailing slots when enabled.",
+    },
+  },
+  render: ({ iconSrc, showLeadingIcon, showTrailingIcon, ...args }) => {
+    const iconNode = iconSrc
+      ? <img src={iconSrc} alt="" aria-hidden="true" style={{ width: "1em", height: "1em", objectFit: "contain" }} />
+      : <DefaultIcon size={14} />
+
+    return (
+      <Badge
+        {...args}
+        showLeadingIcon={showLeadingIcon}
+        showTrailingIcon={showTrailingIcon}
+        leadingIcon={iconNode}
+        trailingIcon={iconNode}
+      />
+    )
+  },
 }
 
 export const AllColours: Story = {

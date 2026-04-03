@@ -1,4 +1,5 @@
 import { useState, forwardRef } from "react"
+import type { ReactNode } from "react"
 import { chakra, HTMLChakraProps, Spinner as ChakraSpinner } from "@chakra-ui/react"
 
 export type ButtonVariant     = "solid" | "outline" | "clear"
@@ -11,6 +12,10 @@ export interface ButtonProps extends HTMLChakraProps<"button"> {
   colorScheme?: ButtonColorScheme
   size?:        ButtonSize
   state?:       ButtonState
+  /** Icon rendered before the label */
+  leadingIcon?:  ReactNode
+  /** Icon rendered after the label */
+  trailingIcon?: ReactNode
   /** Forces a visual interaction state without mouse events — for Storybook stories only */
   forceInteractionState?: "hover" | "active"
 }
@@ -116,6 +121,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     colorScheme = "brand",
     size = "md",
     state = "default",
+    leadingIcon,
+    trailingIcon,
     forceInteractionState,
     children,
     disabled,
@@ -184,7 +191,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         gap={gap}
         style={{ opacity: isLoading ? 0 : 1 }}
       >
+        {leadingIcon}
         {children}
+        {trailingIcon}
       </chakra.span>
       {isLoading && <Spinner size={size} />}
     </chakra.button>
