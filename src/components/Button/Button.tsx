@@ -1,5 +1,5 @@
 import { useState, forwardRef } from "react"
-import { chakra, HTMLChakraProps } from "@chakra-ui/react"
+import { chakra, HTMLChakraProps, Spinner as ChakraSpinner } from "@chakra-ui/react"
 
 export type ButtonVariant     = "solid" | "outline" | "clear"
 export type ButtonColorScheme = "brand" | "subtle" | "success" | "critical" | "neutral" | "inverse" | "warning" | "white"
@@ -86,8 +86,15 @@ const styles: StyleMap = {
 }
 
 // ── Spinner ──────────────────────────────────────────────────────────────────
+const spinnerSize: Record<ButtonSize, "xs" | "sm" | "md"> = {
+  xxs: "xs",
+  xs:  "sm",
+  sm:  "sm",
+  md:  "md",
+  lg:  "md",
+}
+
 function Spinner({ size }: { size: ButtonSize }) {
-  const dim = size === "xxs" || size === "xs" ? "16px" : size === "sm" ? "18px" : "20px"
   return (
     <chakra.span
       position="absolute"
@@ -97,22 +104,7 @@ function Spinner({ size }: { size: ButtonSize }) {
       justifyContent="center"
       pointerEvents="none"
     >
-      <chakra.span
-        display="block"
-        w={dim}
-        h={dim}
-        borderRadius="full"
-        border="2px solid"
-        borderColor="content.light.default"
-        borderTopColor="transparent"
-        sx={{
-          "@keyframes echo-btn-spin": {
-            from: { transform: "rotate(0deg)" },
-            to:   { transform: "rotate(360deg)" },
-          },
-          animation: "echo-btn-spin 0.75s linear infinite",
-        }}
-      />
+      <ChakraSpinner size={spinnerSize[size]} color="content.light.default" />
     </chakra.span>
   )
 }
