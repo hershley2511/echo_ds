@@ -1,66 +1,285 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react"
 import { DropdownMenu } from "./DropdownMenu"
+import { DropdownOption } from "./DropdownOption"
+import { DropdownTrigger } from "./DropdownTrigger"
+import type { DropdownMenuSize } from "./DropdownMenu"
+import type { DropdownOptionSize } from "./DropdownOption"
+import type { DropdownTriggerColour, DropdownTriggerSize } from "./DropdownTrigger"
 
-const meta: Meta = {
-  title: "Overlay/DropdownMenu",
+const meta: Meta<typeof DropdownMenu> = {
+  title: "Navigation/Dropdown",
+  component: DropdownMenu,
+  tags: ["autodocs"],
   parameters: { layout: "centered" },
+  argTypes: {
+    size: {
+      control: "select",
+      options: ["md", "sm"] satisfies DropdownMenuSize[],
+      description: "Size scale applied to the menu and its options",
+    },
+    showSearchBar: { control: "boolean", description: "Show the search input above the options" },
+    searchPlaceholder: { control: "text" },
+    showButton: { control: "boolean", description: "Show an action button below the options" },
+    buttonLabel: { control: "text" },
+  },
 }
 
 export default meta
-type Story = StoryObj
+type Story = StoryObj<typeof DropdownMenu>
 
-const ITEMS = [
-  { label: "Edit",      value: "edit",      icon: <i className="ri-edit-line" /> },
-  { label: "Duplicate", value: "duplicate", icon: <i className="ri-file-copy-line" /> },
-  { label: "Share",     value: "share",     icon: <i className="ri-share-line" /> },
-  { label: "Delete",    value: "delete",    icon: <i className="ri-delete-bin-line" />, isDanger: true, dividerBefore: true },
-]
+// ── Shared sample options ─────────────────────────────────────────────────────
+function SampleOptions({ size = "md", activeValue = "" }: { size?: DropdownOptionSize; activeValue?: string }) {
+  return (
+    <>
+      <DropdownOption
+        size={size}
+        isTitle
+        leadingIcon={<i className="ri-folder-line" />}
+      >
+        My documents
+      </DropdownOption>
+      <DropdownOption
+        size={size}
+        leadingIcon={<i className="ri-file-line" />}
+        trailingIcon={<i className="ri-arrow-right-s-line" />}
+        isActive={activeValue === "resume"}
+      >
+        Resume 2024.pdf
+      </DropdownOption>
+      <DropdownOption
+        size={size}
+        leadingIcon={<i className="ri-file-line" />}
+        trailingIcon={<i className="ri-arrow-right-s-line" />}
+        isActive={activeValue === "cover"}
+      >
+        Cover letter.docx
+      </DropdownOption>
+      <DropdownOption
+        size={size}
+        leadingIcon={<i className="ri-file-line" />}
+        trailingIcon={<i className="ri-arrow-right-s-line" />}
+        isActive={activeValue === "portfolio"}
+      >
+        Portfolio.pdf
+      </DropdownOption>
+      <DropdownOption
+        size={size}
+        topSeparator
+        leadingIcon={<i className="ri-folder-line" />}
+      >
+        Shared with me
+      </DropdownOption>
+    </>
+  )
+}
 
-const Trigger = () => (
-  <button
-    style={{
-      display: "inline-flex",
-      alignItems: "center",
-      gap: 6,
-      padding: "8px 14px",
-      background: "white",
-      border: "1px solid #E2E7E9",
-      borderRadius: 8,
-      cursor: "pointer",
-      fontFamily: "Inter, sans-serif",
-      fontSize: 14,
-      color: "#424559",
-    }}
-  >
-    Actions <span style={{ fontSize: 10 }}>▼</span>
-  </button>
-)
+// ── Menu Playground ───────────────────────────────────────────────────────────
+export const MenuPlayground: Story = {
+  name: "Menu / Playground",
+  args: {
+    size: "md",
+    showSearchBar: true,
+    searchPlaceholder: "Search folders",
+    showButton: true,
+    buttonLabel: "Upload more documents",
+  },
+  render: (args) => (
+    <DropdownMenu {...args}>
+      <SampleOptions size={args.size} />
+    </DropdownMenu>
+  ),
+}
 
-export const Playground: Story = {
+// ── Menu — all toggle combinations ───────────────────────────────────────────
+export const MenuToggles: Story = {
+  name: "Menu / Toggle Combinations",
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
+      {([
+        { showSearchBar: false, showButton: false, label: "Plain" },
+        { showSearchBar: true,  showButton: false, label: "+ Search" },
+        { showSearchBar: false, showButton: true,  label: "+ Button" },
+        { showSearchBar: true,  showButton: true,  label: "+ Both" },
+      ] as const).map(({ showSearchBar, showButton, label }) => (
+        <div key={label} style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
+          <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#7C8094" }}>{label}</span>
+          <DropdownMenu showSearchBar={showSearchBar} showButton={showButton} buttonLabel="Upload more documents" searchPlaceholder="Search folders">
+            <SampleOptions />
+          </DropdownMenu>
+        </div>
+      ))}
+    </div>
+  ),
+}
+
+// ── Menu — sizes ──────────────────────────────────────────────────────────────
+export const MenuSizes: Story = {
+  name: "Menu / Sizes",
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
+      {(["md", "sm"] as const).map((size) => (
+        <div key={size} style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
+          <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#7C8094" }}>{size}</span>
+          <DropdownMenu size={size} showSearchBar showButton buttonLabel="Upload more documents" searchPlaceholder="Search folders">
+            <SampleOptions size={size} />
+          </DropdownMenu>
+        </div>
+      ))}
+    </div>
+  ),
+}
+
+// ── Option — all states ───────────────────────────────────────────────────────
+export const OptionStates: Story = {
+  name: "Option / All States",
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
+      {(["md", "sm"] as const).map((size) => (
+        <div key={size} style={{ width: 304, border: "1px solid #E2E7E9", borderRadius: 16, overflow: "hidden" }}>
+          <DropdownOption size={size} isTitle leadingIcon={<i className="ri-folder-line" />}>Section title</DropdownOption>
+          <DropdownOption size={size} leadingIcon={<i className="ri-file-line" />} trailingIcon={<i className="ri-arrow-right-s-line" />}>Default option</DropdownOption>
+          <DropdownOption size={size} leadingIcon={<i className="ri-file-line" />} trailingIcon={<i className="ri-arrow-right-s-line" />} isActive>Active / selected</DropdownOption>
+          <DropdownOption size={size} description="Secondary description text" leadingIcon={<i className="ri-file-line" />}>With description</DropdownOption>
+          <DropdownOption size={size} topSeparator leadingIcon={<i className="ri-folder-line" />}>After separator</DropdownOption>
+        </div>
+      ))}
+    </div>
+  ),
+}
+
+// ── Trigger — all states × colours × sizes ───────────────────────────────────
+export const TriggerStates: Story = {
+  name: "Trigger / All States",
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      {(["brand", "neutral"] as const).map((colour) => (
+        <div key={colour} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#7C8094", textTransform: "capitalize" }}>{colour}</span>
+          <div style={{ display: "flex", gap: 32, alignItems: "center", flexWrap: "wrap" }}>
+            {(["md", "sm", "xs"] as const).map((size) => (
+              <div key={size} style={{ display: "flex", gap: 24, alignItems: "center" }}>
+                <DropdownTrigger colour={colour} size={size}>Default</DropdownTrigger>
+                <DropdownTrigger colour={colour} size={size} isOpen>Selected</DropdownTrigger>
+                <DropdownTrigger colour={colour} size={size} showBadge badgeCount={3}>With badge</DropdownTrigger>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  ),
+}
+
+// ── Trigger Playground ────────────────────────────────────────────────────────
+export const TriggerPlayground: Story = {
+  name: "Trigger / Playground",
+  parameters: { controls: { disable: true } },
   render: () => {
-    const [last, setLast] = useState("")
+    const [colour, setColour] = useState<DropdownTriggerColour>("brand")
+    const [size, setSize]     = useState<DropdownTriggerSize>("md")
+    const [isOpen, setIsOpen] = useState(false)
+    const [badge, setBadge]   = useState(false)
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-        <DropdownMenu items={ITEMS} trigger={<Trigger />} onSelect={setLast} />
-        {last && <span style={{ fontSize: 13, color: "#7C8094", fontFamily: "Inter, sans-serif" }}>Selected: {last}</span>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "center", fontFamily: "Inter, sans-serif" }}>
+        <div style={{ display: "flex", gap: 12, fontSize: 13 }}>
+          {(["brand", "neutral"] as const).map((c) => (
+            <label key={c} style={{ display: "flex", gap: 4, cursor: "pointer" }}>
+              <input type="radio" checked={colour === c} onChange={() => setColour(c)} /> {c}
+            </label>
+          ))}
+          <span style={{ width: 1, background: "#E2E7E9" }} />
+          {(["md", "sm", "xs"] as const).map((s) => (
+            <label key={s} style={{ display: "flex", gap: 4, cursor: "pointer" }}>
+              <input type="radio" checked={size === s} onChange={() => setSize(s)} /> {s}
+            </label>
+          ))}
+          <span style={{ width: 1, background: "#E2E7E9" }} />
+          <label style={{ display: "flex", gap: 4, cursor: "pointer" }}>
+            <input type="checkbox" checked={badge} onChange={(e) => setBadge(e.target.checked)} /> badge
+          </label>
+        </div>
+        <DropdownTrigger colour={colour} size={size} isOpen={isOpen} showBadge={badge} badgeCount={3} onClick={() => setIsOpen((o) => !o)}>
+          Filter by
+        </DropdownTrigger>
       </div>
     )
   },
 }
 
-export const Placements: Story = {
-  render: () => (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, padding: 24 }}>
-      {(["bottom-start", "bottom-end", "top-start", "top-end"] as const).map((p) => (
-        <div key={p} style={{ display: "flex", justifyContent: "center" }}>
-          <DropdownMenu
-            items={ITEMS.slice(0, 3)}
-            trigger={<button style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #E2E7E9", cursor: "pointer", fontFamily: "Inter, sans-serif", fontSize: 12 }}>{p}</button>}
-            placement={p}
-          />
+// ── Live Demo — Trigger + Menu composed ───────────────────────────────────────
+export const LiveDemo: Story = {
+  name: "Live Demo (Trigger + Menu)",
+  parameters: { controls: { disable: true } },
+  render: () => {
+    const [isOpen, setIsOpen]         = useState(false)
+    const [selected, setSelected]     = useState("")
+    const [showSearch, setShowSearch] = useState(true)
+    const [showBtn, setShowBtn]       = useState(true)
+    const [size, setSize]             = useState<DropdownMenuSize>("md")
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, fontFamily: "Inter, sans-serif" }}>
+        {/* Controls */}
+        <div style={{ display: "flex", gap: 16, fontSize: 13, color: "#424559" }}>
+          {(["md", "sm"] as const).map((s) => (
+            <label key={s} style={{ display: "flex", gap: 4, cursor: "pointer" }}>
+              <input type="radio" checked={size === s} onChange={() => setSize(s)} /> {s}
+            </label>
+          ))}
+          <label style={{ display: "flex", gap: 4, cursor: "pointer" }}>
+            <input type="checkbox" checked={showSearch} onChange={(e) => setShowSearch(e.target.checked)} /> search bar
+          </label>
+          <label style={{ display: "flex", gap: 4, cursor: "pointer" }}>
+            <input type="checkbox" checked={showBtn} onChange={(e) => setShowBtn(e.target.checked)} /> button
+          </label>
         </div>
-      ))}
-    </div>
-  ),
+
+        {/* Composed trigger + menu */}
+        <div style={{ position: "relative", display: "inline-flex", flexDirection: "column", alignItems: "flex-start", gap: 8 }}>
+          <DropdownTrigger isOpen={isOpen} onClick={() => setIsOpen((o) => !o)}>
+            My documents
+          </DropdownTrigger>
+
+          {isOpen && (
+            <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 100 }}>
+              <DropdownMenu
+                size={size}
+                showSearchBar={showSearch}
+                searchPlaceholder="Search folders"
+                showButton={showBtn}
+                buttonLabel="Upload more documents"
+                onButtonClick={() => setIsOpen(false)}
+              >
+                <DropdownOption size={size} isTitle leadingIcon={<i className="ri-folder-line" />}>My documents</DropdownOption>
+                {["Resume 2024.pdf", "Cover letter.docx", "Portfolio.pdf"].map((name) => (
+                  <DropdownOption
+                    key={name}
+                    size={size}
+                    leadingIcon={<i className="ri-file-line" />}
+                    trailingIcon={<i className="ri-arrow-right-s-line" />}
+                    isActive={selected === name}
+                    onClick={() => { setSelected(name); setIsOpen(false) }}
+                  >
+                    {name}
+                  </DropdownOption>
+                ))}
+                <DropdownOption size={size} topSeparator leadingIcon={<i className="ri-folder-line" />}>
+                  Shared with me
+                </DropdownOption>
+              </DropdownMenu>
+            </div>
+          )}
+        </div>
+
+        {selected && (
+          <span style={{ fontSize: 13, color: "#7C8094" }}>Selected: {selected}</span>
+        )}
+      </div>
+    )
+  },
 }

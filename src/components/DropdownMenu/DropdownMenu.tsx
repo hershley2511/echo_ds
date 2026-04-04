@@ -1,106 +1,171 @@
-import { useState, useRef, useEffect, forwardRef } from "react"
-import { chakra } from "@chakra-ui/react"
+import { forwardRef, useState } from "react"
+import type { ReactNode, ChangeEvent } from "react"
+import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
-export interface DropdownMenuItem {
-  label: string
-  value: string
-  icon?: React.ReactNode
-  isDisabled?: boolean
-  isDanger?: boolean
-  dividerBefore?: boolean
+export type DropdownMenuSize = "md" | "sm"
+
+export interface DropdownMenuProps extends Omit<HTMLChakraProps<"div">, "onChange"> {
+  size?: DropdownMenuSize
+  /** Renders a search input above the options list */
+  showSearchBar?: boolean
+  /** Placeholder text for the search input */
+  searchPlaceholder?: string
+  /** Called with the current search query on every keystroke */
+  onSearch?: (query: string) => void
+  /** Renders an action button below the options list */
+  showButton?: boolean
+  /** Label for the action button */
+  buttonLabel?: string
+  /** Called when the action button is clicked */
+  onButtonClick?: () => void
+  /** DropdownOption elements rendered in the scrollable list */
+  children?: ReactNode
 }
 
-export interface DropdownMenuProps {
-  items: DropdownMenuItem[]
-  trigger: React.ReactNode
-  onSelect?: (value: string) => void
-  placement?: "bottom-start" | "bottom-end" | "top-start" | "top-end"
-  minWidth?: string
+// ── Size tokens ───────────────────────────────────────────────────────────────
+const sizeTokens: Record<DropdownMenuSize, { btnH: string; btnIconSize: string; btnFontSize: string }> = {
+  md: { btnH: "40px", btnIconSize: "24px", btnFontSize: "14px" },
+  sm: { btnH: "36px", btnIconSize: "20px", btnFontSize: "14px" },
 }
 
+// ── Component ─────────────────────────────────────────────────────────────────
 export const DropdownMenu = forwardRef<HTMLDivElement, DropdownMenuProps>(function DropdownMenu(
-  { items, trigger, onSelect, placement = "bottom-start", minWidth = "180px" },
+  {
+    size = "md",
+    showSearchBar = false,
+    searchPlaceholder = "Search",
+    onSearch,
+    showButton = false,
+    buttonLabel = "Add item",
+    onButtonClick,
+    children,
+    ...rest
+  },
   ref
 ) {
-  const [isOpen, setIsOpen] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [query, setQuery] = useState("")
+  const { btnH, btnIconSize, btnFontSize } = sizeTokens[size]
 
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false)
-      }
-    }
-    document.addEventListener("mousedown", handleClick)
-    return () => document.removeEventListener("mousedown", handleClick)
-  }, [])
-
-  const placementStyles: Record<string, object> = {
-    "bottom-start": { top: "calc(100% + 4px)", left: 0 },
-    "bottom-end": { top: "calc(100% + 4px)", right: 0 },
-    "top-start": { bottom: "calc(100% + 4px)", left: 0 },
-    "top-end": { bottom: "calc(100% + 4px)", right: 0 },
+  function handleSearch(e: ChangeEvent<HTMLInputElement>) {
+    setQuery(e.target.value)
+    onSearch?.(e.target.value)
   }
 
   return (
-    <chakra.div ref={containerRef} position="relative" display="inline-flex" fontFamily="Inter, sans-serif">
-      <chakra.div onClick={() => setIsOpen((o) => !o)} display="inline-flex" cursor="pointer">
-        {trigger}
+    <chakra.div
+      ref={ref}
+      display="flex"
+      flexDir="column"
+      w="304px"
+      bg="white"
+      border="1px solid"
+      borderColor="grey.100"
+      borderRadius="16px"
+      boxShadow="sm"
+      py="2"
+      overflow="hidden"
+      fontFamily="Inter, sans-serif"
+      {...rest}
+    >
+      {/* Search bar */}
+      {showSearchBar && (
+        <chakra.div px="4" py="2" flexShrink={0}>
+          <chakra.label
+            display="flex"
+            alignItems="center"
+            gap="2"
+            px="3"
+            py="2"
+            bg="rgba(154,159,184,0.2)"
+            border="1px solid transparent"
+            borderRadius="8px"
+            cursor="text"
+          >
+            <chakra.i
+              className="ri-search-line"
+              fontSize="16px"
+              color="content.light.subtle"
+              flexShrink={0}
+              lineHeight={1}
+            />
+            <chakra.input
+              flex={1}
+              border="none"
+              bg="transparent"
+              outline="none"
+              fontSize="14px"
+              lineHeight="20px"
+              color="content.light.default"
+              fontFamily="Inter, sans-serif"
+              placeholder={searchPlaceholder}
+              value={query}
+              onChange={handleSearch}
+              _placeholder={{ color: "content.light.subtle" }}
+              style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1, 'lnum' 1, 'tnum' 1" }}
+            />
+          </chakra.label>
+        </chakra.div>
+      )}
+
+      {/* Options list */}
+      <chakra.div
+        flex={1}
+        overflowY="auto"
+        maxH="284px"
+        css={{
+          "&::-webkit-scrollbar": { width: "4px" },
+          "&::-webkit-scrollbar-track": { background: "transparent" },
+          "&::-webkit-scrollbar-thumb": { background: "#EDEDED", borderRadius: "100px" },
+        }}
+      >
+        {children}
       </chakra.div>
-      {isOpen && (
-        <chakra.ul
-          position="absolute"
-          zIndex={200}
-          bg="white"
-          border="1px solid"
-          borderColor="grey.100"
-          borderRadius="8px"
-          boxShadow="0 8px 24px rgba(0,0,0,0.12)"
-          listStyle="none"
-          m={0}
-          p="4px"
-          minW={minWidth}
-          style={placementStyles[placement] as React.CSSProperties}
-        >
-          {items.map((item, i) => (
-            <chakra.div key={item.value}>
-              {item.dividerBefore && i > 0 && (
-                <chakra.li
-                  h="1px"
-                  bg="grey.100"
-                  mx="8px"
-                  my="4px"
-                  listStyle="none"
-                />
-              )}
-              <chakra.li
-                display="flex"
-                alignItems="center"
-                gap="8px"
-                px="10px"
-                py="8px"
-                borderRadius="6px"
-                fontSize="14px"
-                color={item.isDanger ? "red.500" : item.isDisabled ? "grey.400" : "slate.800"}
-                fontWeight="400"
-                cursor={item.isDisabled ? "not-allowed" : "pointer"}
-                opacity={item.isDisabled ? 0.5 : 1}
-                _hover={item.isDisabled ? {} : { bg: item.isDanger ? "#FFF0EB" : "slate.100" }}
-                onMouseDown={() => {
-                  if (!item.isDisabled) {
-                    onSelect?.(item.value)
-                    setIsOpen(false)
-                  }
-                }}
-              >
-                {item.icon && (
-                  <chakra.span fontSize="14px" flexShrink={0}>{item.icon}</chakra.span>
-                )}
-                {item.label}
-              </chakra.li>
-            </chakra.div>
-          ))}
-        </chakra.ul>
+
+      {/* Action button */}
+      {showButton && (
+        <chakra.div px="4" py="2" flexShrink={0}>
+          <chakra.button
+            type="button"
+            display="flex"
+            alignItems="center"
+            gap="2"
+            w="full"
+            h={btnH}
+            px="4"
+            bg="interaction.neutral.default"
+            border="1px solid"
+            borderColor="interaction.neutral.default"
+            borderRadius="8px"
+            cursor="pointer"
+            fontFamily="Inter, sans-serif"
+            _hover={{ bg: "interaction.neutral.hover", borderColor: "interaction.neutral.hover" }}
+            _active={{ bg: "interaction.neutral.active", borderColor: "interaction.neutral.active" }}
+            _focusVisible={{
+              outline: "none",
+              ring: "2px",
+              ringColor: "focus.brand-default",
+              ringOffset: "2px",
+            }}
+            onClick={onButtonClick}
+          >
+            <chakra.i
+              className="ri-add-circle-fill"
+              fontSize={btnIconSize}
+              color="interaction.main.default"
+              flexShrink={0}
+              lineHeight={1}
+            />
+            <chakra.span
+              fontSize={btnFontSize}
+              fontWeight="500"
+              lineHeight="16px"
+              color="content.light.default"
+              style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1" }}
+            >
+              {buttonLabel}
+            </chakra.span>
+          </chakra.button>
+        </chakra.div>
       )}
     </chakra.div>
   )
