@@ -12,16 +12,16 @@ export interface BannerProps extends HTMLChakraProps<"div"> {
 }
 
 // ── Variant tokens ────────────────────────────────────────────────────────────
-const variantTokens: Record<BannerVariant, { bg: string; iconBg: string; iconClass: string }> = {
-  info:    { bg: "feedback.info.subtle",     iconBg: "feedback.info.default",     iconClass: "ri-information-fill"   },
-  warning: { bg: "feedback.warning.subtle",  iconBg: "feedback.warning.default",  iconClass: "ri-error-warning-fill" },
-  error:   { bg: "feedback.critical.subtle", iconBg: "feedback.critical.default", iconClass: "ri-error-warning-fill" },
+const variantTokens: Record<BannerVariant, { bg: string; iconColor: string; iconClass: string }> = {
+  info:    { bg: "feedback.info.subtle",     iconColor: "feedback.info.default",     iconClass: "ri-information-fill"   },
+  warning: { bg: "feedback.warning.subtle",  iconColor: "feedback.warning.default",  iconClass: "ri-error-warning-fill" },
+  error:   { bg: "feedback.critical.subtle", iconColor: "feedback.critical.default", iconClass: "ri-error-warning-fill" },
 }
 
 // ── Size tokens ───────────────────────────────────────────────────────────────
-const sizeTokens: Record<BannerSize, { minH: string; iconSize: string; iconFontSize: string; fontSize: string; lineHeight: string; letterSpacing: string }> = {
-  md: { minH: "40px", iconSize: "20px", iconFontSize: "13px", fontSize: "16px", lineHeight: "24px", letterSpacing: "-0.176px" },
-  sm: { minH: "36px", iconSize: "16px", iconFontSize: "10px", fontSize: "14px", lineHeight: "20px", letterSpacing: "0px"      },
+const sizeTokens: Record<BannerSize, { minH: string; iconSize: string; fontSize: string; lineHeight: string; letterSpacing: string }> = {
+  md: { minH: "40px", iconSize: "20px", fontSize: "16px", lineHeight: "24px", letterSpacing: "-0.176px" },
+  sm: { minH: "36px", iconSize: "16px", fontSize: "14px", lineHeight: "20px", letterSpacing: "0px"      },
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -29,8 +29,8 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
   { variant = "info", size = "md", onDismiss, children, ...rest },
   ref
 ) {
-  const { bg, iconBg, iconClass } = variantTokens[variant]
-  const { minH, iconSize, iconFontSize, fontSize, lineHeight, letterSpacing } = sizeTokens[size]
+  const { bg, iconColor, iconClass } = variantTokens[variant]
+  const { minH, iconSize, fontSize, lineHeight, letterSpacing } = sizeTokens[size]
 
   return (
     <chakra.div
@@ -46,21 +46,13 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
     >
       {/* Icon + Message */}
       <chakra.div display="flex" alignItems="center" gap="2" flex={1} minW={0}>
-        <chakra.div
-          w={iconSize}
-          h={iconSize}
-          minW={iconSize}
-          borderRadius="full"
-          bg={iconBg}
-          color="content.dark.strong"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          fontSize={iconFontSize}
+        <chakra.i
+          className={iconClass}
+          color={iconColor}
+          fontSize={iconSize}
           flexShrink={0}
-        >
-          <i className={iconClass} style={{ lineHeight: 1 }} />
-        </chakra.div>
+          lineHeight={1}
+        />
         <chakra.p
           m={0}
           fontFamily="Inter, sans-serif"
