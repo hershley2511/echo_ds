@@ -1,6 +1,7 @@
 import { forwardRef, useState } from "react"
 import type { ReactNode, ChangeEvent } from "react"
 import { chakra, HTMLChakraProps } from "@chakra-ui/react"
+import { Button } from "../Button/Button"
 
 export type DropdownMenuSize = "md" | "sm"
 
@@ -121,50 +122,30 @@ export const DropdownMenu = forwardRef<HTMLDivElement, DropdownMenuProps>(functi
         {children}
       </chakra.div>
 
-      {/* Action button */}
+      {/* Action button — uses Button component (neutral/solid) with brand-coloured icon */}
       {showButton && (
         <chakra.div px="4" py="2" flexShrink={0}>
-          <chakra.button
-            type="button"
-            display="flex"
-            alignItems="center"
-            gap="2"
-            w="full"
+          <Button
+            variant="solid"
+            colorScheme="neutral"
+            size="sm"
             h={btnH}
+            w="full"
+            justifyContent="flex-start"
             px="4"
-            bg="interaction.neutral.default"
-            border="1px solid"
-            borderColor="interaction.neutral.default"
-            borderRadius="8px"
-            cursor="pointer"
-            fontFamily="Inter, sans-serif"
-            _hover={{ bg: "interaction.neutral.hover", borderColor: "interaction.neutral.hover" }}
-            _active={{ bg: "interaction.neutral.active", borderColor: "interaction.neutral.active" }}
-            _focusVisible={{
-              outline: "none",
-              ring: "2px",
-              ringColor: "focus.brand-default",
-              ringOffset: "2px",
-            }}
+            leadingIcon={
+              <chakra.i
+                className="ri-add-circle-fill"
+                fontSize={btnIconSize}
+                color="interaction.main.default"
+                flexShrink={0}
+                lineHeight={1}
+              />
+            }
             onClick={onButtonClick}
           >
-            <chakra.i
-              className="ri-add-circle-fill"
-              fontSize={btnIconSize}
-              color="interaction.main.default"
-              flexShrink={0}
-              lineHeight={1}
-            />
-            <chakra.span
-              fontSize={btnFontSize}
-              fontWeight="500"
-              lineHeight="16px"
-              color="content.light.default"
-              style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1" }}
-            >
-              {buttonLabel}
-            </chakra.span>
-          </chakra.button>
+            {buttonLabel}
+          </Button>
         </chakra.div>
       )}
     </chakra.div>
