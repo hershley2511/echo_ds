@@ -1,74 +1,82 @@
 import { forwardRef } from "react"
 import { chakra, HTMLChakraProps } from "@chakra-ui/react"
 
-export type BannerVariant = "info" | "success" | "warning" | "critical"
+export type BannerVariant = "info" | "warning" | "error"
+export type BannerSize    = "md" | "sm"
 
 export interface BannerProps extends HTMLChakraProps<"div"> {
-  variant?: BannerVariant
-  title?: string
-  description?: string
+  variant?:   BannerVariant
+  size?:      BannerSize
+  /** Renders a dismiss button — only visible when variant is "info" (matches Figma) */
   onDismiss?: () => void
-  action?: React.ReactNode
 }
 
-const variants: Record<BannerVariant, { bg: string; borderColor: string; iconColor: string; icon: string }> = {
-  info:     { bg: "#EBF8FF", borderColor: "#BEE3F8", iconColor: "#2B6CB0", icon: "ri-information-line" },
-  success:  { bg: "#F1FFE5", borderColor: "#BBF0BB", iconColor: "#009D7B", icon: "ri-check-line" },
-  warning:  { bg: "#FFFAE2", borderColor: "#FFE89A", iconColor: "#8B6005", icon: "ri-alert-line" },
-  critical: { bg: "#FFE8E0", borderColor: "#FFCAB5", iconColor: "#C84F25", icon: "ri-close-line" },
+// ── Variant tokens ────────────────────────────────────────────────────────────
+const variantTokens: Record<BannerVariant, { bg: string; iconBg: string; iconClass: string }> = {
+  info:    { bg: "feedback.info.subtle",     iconBg: "feedback.info.default",     iconClass: "ri-information-fill"   },
+  warning: { bg: "feedback.warning.subtle",  iconBg: "feedback.warning.default",  iconClass: "ri-error-warning-fill" },
+  error:   { bg: "feedback.critical.subtle", iconBg: "feedback.critical.default", iconClass: "ri-error-warning-fill" },
 }
 
+// ── Size tokens ───────────────────────────────────────────────────────────────
+const sizeTokens: Record<BannerSize, { minH: string; iconSize: string; iconFontSize: string; fontSize: string; lineHeight: string; letterSpacing: string }> = {
+  md: { minH: "40px", iconSize: "20px", iconFontSize: "13px", fontSize: "16px", lineHeight: "24px", letterSpacing: "-0.176px" },
+  sm: { minH: "36px", iconSize: "16px", iconFontSize: "10px", fontSize: "14px", lineHeight: "20px", letterSpacing: "0px"      },
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
-  { variant = "info", title, description, onDismiss, action, children, ...rest },
+  { variant = "info", size = "md", onDismiss, children, ...rest },
   ref
 ) {
-  const { bg, borderColor, iconColor, icon } = variants[variant]
+  const { bg, iconBg, iconClass } = variantTokens[variant]
+  const { minH, iconSize, iconFontSize, fontSize, lineHeight, letterSpacing } = sizeTokens[size]
 
   return (
     <chakra.div
       ref={ref}
       display="flex"
-      alignItems="flex-start"
-      gap="12px"
-      p="16px"
+      alignItems="center"
+      w="full"
+      minH={minH}
+      px="4"
+      py="2"
       bg={bg}
-      border="1px solid"
-      borderColor={borderColor}
-      borderRadius="8px"
-      fontFamily="Inter, sans-serif"
       {...rest}
     >
-      <chakra.div
-        w="20px"
-        h="20px"
-        borderRadius="full"
-        bg={iconColor}
-        color="white"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        fontSize="13px"
-        fontWeight="700"
-        flexShrink={0}
-        mt="1px"
-      >
-        <i className={icon} style={{ lineHeight: 1 }} />
+      {/* Icon + Message */}
+      <chakra.div display="flex" alignItems="center" gap="2" flex={1} minW={0}>
+        <chakra.div
+          w={iconSize}
+          h={iconSize}
+          minW={iconSize}
+          borderRadius="full"
+          bg={iconBg}
+          color="content.dark.strong"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          fontSize={iconFontSize}
+          flexShrink={0}
+        >
+          <i className={iconClass} style={{ lineHeight: 1 }} />
+        </chakra.div>
+        <chakra.p
+          m={0}
+          fontFamily="Inter, sans-serif"
+          fontSize={fontSize}
+          fontWeight="400"
+          lineHeight={lineHeight}
+          letterSpacing={letterSpacing}
+          color="content.light.default"
+          style={{ fontFeatureSettings: "'cv05' 1, 'cv10' 1, 'lnum' 1, 'tnum' 1" }}
+        >
+          {children}
+        </chakra.p>
       </chakra.div>
-      <chakra.div flex={1} display="flex" flexDir="column" gap="4px">
-        {title && (
-          <chakra.p m={0} fontSize="14px" fontWeight="600" color="slate.800" lineHeight="1.4">
-            {title}
-          </chakra.p>
-        )}
-        {description && (
-          <chakra.p m={0} fontSize="13px" color="slate.700" lineHeight="1.5">
-            {description}
-          </chakra.p>
-        )}
-        {children}
-        {action && <chakra.div mt="8px">{action}</chakra.div>}
-      </chakra.div>
-      {onDismiss && (
+
+      {/* Dismiss button — only for "info" variant (Informational in Figma) */}
+      {onDismiss && variant === "info" && (
         <chakra.button
           type="button"
           onClick={onDismiss}
@@ -78,12 +86,16 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
           bg="transparent"
           border="none"
           cursor="pointer"
-          color="slate.700"
-          fontSize="16px"
-          p="2px"
-          borderRadius="4px"
+          color="content.light.default"
+          p="10px"
+          borderRadius="8px"
           flexShrink={0}
           _hover={{ bg: "rgba(0,0,0,0.06)" }}
+          _focusVisible={{
+            ring: "2px",
+            ringColor: "focus.brand-default",
+            ringOffset: "2px",
+          }}
           aria-label="Dismiss"
         >
           <i className="ri-close-line" style={{ fontSize: "16px", lineHeight: 1 }} />
