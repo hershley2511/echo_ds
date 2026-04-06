@@ -22,67 +22,38 @@ export interface FooterProps extends HTMLChakraProps<"footer"> {
   showSocials?: boolean
 }
 
-// ── Logo fragment helper ───────────────────────────────────────────────────────
-// Each entry: [src, top%, right%, bottom%, left%]
-type Frag = [string, string, string, string, string]
-
-function FragmentLogo({ w, h, frags }: { w: string; h: string; frags: Frag[] }) {
+// ── Favicon (product symbol) ──────────────────────────────────────────────────
+function Favicon() {
   return (
-    <chakra.div position="relative" w={w} h={h} flexShrink={0} overflow="hidden">
-      {frags.map(([src, top, right, bottom, left], i) => (
-        <chakra.img
-          key={i}
-          src={src}
-          position="absolute"
-          top={top}
-          right={right}
-          bottom={bottom}
-          left={left}
-          display="block"
-          w="full"
-          h="full"
-          style={{ maxWidth: "none" }}
-          alt=""
-        />
-      ))}
-    </chakra.div>
+    <chakra.img
+      src="/footer/Symbol black web.svg"
+      w="58px"
+      h="44px"
+      flexShrink={0}
+      display="block"
+      alt=""
+    />
   )
 }
 
-// ── Favicon (product logo) ────────────────────────────────────────────────────
-const faviconFrags: Frag[] = [
-  ["/footer/favicon-1.png", "18.57%", "61.46%", "18.43%", "13.12%"],
-  ["/footer/favicon-2.png", "17.32%", "13.12%", "17.27%", "42.74%"],
-]
-function Favicon() {
-  return <FragmentLogo w="58px" h="44px" frags={faviconFrags} />
-}
-
 // ── DOTC Brand Logo ───────────────────────────────────────────────────────────
-const dotcFrags: Frag[] = [
-  ["/footer/dotc-1.png",  "20.98%", "58.57%", "16.59%", "23.36%"],
-  ["/footer/dotc-2.png",  "20.98%", "37.10%", "16.54%", "43.17%"],
-  ["/footer/dotc-3.png",  "21.03%", "18.96%", "16.50%", "64.37%"],
-  ["/footer/dotc-4.png",  "21.41%",  "0.16%", "16.11%", "82.69%"],
-  ["/footer/dotc-5.png",  "68.88%", "89.16%", "27.67%",  "7.95%"],
-  ["/footer/dotc-6.png",  "51.73%", "86.85%", "20.85%",  "5.64%"],
-  ["/footer/dotc-7.png",  "59.13%", "88.60%", "32.84%",  "9.97%"],
-  ["/footer/dotc-8.png",  "59.14%", "91.19%", "33.14%",  "7.38%"],
-  ["/footer/dotc-9.png",  "30.49%", "90.52%", "35.46%",    "0%"],
-  ["/footer/dotc-10.png", "30.49%", "86.82%", "46.41%",  "9.06%"],
-  ["/footer/dotc-11.png",    "0%",  "81.36%", "29.65%", "14.18%"],
-  ["/footer/dotc-12.png", "74.28%", "81.37%",  "9.89%", "10.18%"],
-  ["/footer/dotc-13.png", "66.27%", "81.25%", "16.55%", "14.29%"],
-  ["/footer/dotc-14.png", "60.28%", "86.62%",  "0.03%",  "0.06%"],
-]
 function DotcLogo() {
-  return <FragmentLogo w="76px" h="24px" frags={dotcFrags} />
+  return (
+    <chakra.img
+      src="/footer/Logo.svg"
+      w="76px"
+      h="24px"
+      flexShrink={0}
+      display="block"
+      alt="DOTC"
+    />
+  )
 }
 
 // ── "Built by DOTC" lockup ────────────────────────────────────────────────────
 function BuiltByDotc() {
   return (
-    <chakra.div display="flex" alignItems="center" gap="8px" flexShrink={0}>
+    <chakra.div display="flex" alignItems="center" gap="8px" flexShrink={0} pl="4">
       <chakra.span
         fontFamily="'Lato', sans-serif"
         fontWeight="400"
@@ -153,7 +124,7 @@ function SocialButtons() {
           h="56px"
           bg="transparent"
           borderRadius="9px"
-          color="content.light.default"
+          color="content.light.brand-subtle"
           _hover={{ bg: "interaction.neutral.default" }}
           transition="background 0.15s"
         >
