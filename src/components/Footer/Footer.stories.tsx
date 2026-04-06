@@ -1,66 +1,112 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { Footer } from "./Footer"
+import type { FooterDevice } from "./Footer"
 
 const meta: Meta<typeof Footer> = {
-  title: "Navigation/Footer",
+  title: "Layout/Footer",
   component: Footer,
   tags: ["autodocs"],
   parameters: { layout: "fullscreen" },
+  argTypes: {
+    device: {
+      control: "select",
+      options: ["desktop", "mobile"] satisfies FooterDevice[],
+      description: "Desktop (1280px) or Mobile (360px) layout",
+    },
+    condensed: {
+      control: "boolean",
+      description: "Single-row condensed layout — hides divider, socials, and copyright",
+    },
+    showSocials: { control: "boolean", description: "Show social icon buttons" },
+    copyright: { control: "text" },
+  },
 }
 
 export default meta
 type Story = StoryObj<typeof Footer>
 
-export const Full: Story = {
+// ── Playground ────────────────────────────────────────────────────────────────
+export const Playground: Story = {
   args: {
-    variant: "full",
-    tagline: "Building digital services for a better Singapore.",
-    copyright: "© 2025 Digital & Technology Office. All rights reserved.",
-    linkGroups: [
-      {
-        heading: "Product",
-        links: [
-          { label: "Features", href: "#" },
-          { label: "Pricing", href: "#" },
-          { label: "Changelog", href: "#" },
-        ],
-      },
-      {
-        heading: "Company",
-        links: [
-          { label: "About", href: "#" },
-          { label: "Careers", href: "#" },
-          { label: "Contact", href: "#" },
-        ],
-      },
-      {
-        heading: "Legal",
-        links: [
-          { label: "Privacy", href: "#" },
-          { label: "Terms", href: "#" },
-        ],
-      },
-    ],
-    bottomLinks: [
-      { label: "Privacy Policy", href: "#" },
-      { label: "Terms of Use", href: "#" },
-    ],
-    logo: (
-      <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: 18, color: "#5AC792" }}>
-        Echo DS
-      </span>
-    ),
+    device: "desktop",
+    condensed: false,
+    showSocials: true,
   },
+  render: (args) => (
+    <div style={{ overflowX: "auto" }}>
+      <Footer {...args} />
+    </div>
+  ),
 }
 
-export const Minimal: Story = {
-  args: {
-    variant: "minimal",
-    copyright: "© 2025 Digital & Technology Office.",
-    bottomLinks: [
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
-      { label: "Accessibility", href: "#" },
-    ],
-  },
+// ── All Variants ──────────────────────────────────────────────────────────────
+export const AllVariants: Story = {
+  name: "All Variants",
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 48, overflowX: "auto", fontFamily: "Inter, sans-serif" }}>
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.96px", padding: "0 0 8px 80px" }}>Desktop — Full</div>
+        <Footer device="desktop" condensed={false} />
+      </div>
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.96px", padding: "0 0 8px 24px" }}>Desktop — Condensed</div>
+        <Footer device="desktop" condensed />
+      </div>
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.96px", padding: "0 0 8px 24px" }}>Mobile — Full</div>
+        <Footer device="mobile" condensed={false} />
+      </div>
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "#7C8094", textTransform: "uppercase", letterSpacing: "0.96px", padding: "0 0 8px 24px" }}>Mobile — Condensed</div>
+        <Footer device="mobile" condensed />
+      </div>
+    </div>
+  ),
+}
+
+// ── Desktop Full ──────────────────────────────────────────────────────────────
+export const DesktopFull: Story = {
+  name: "Desktop / Full",
+  parameters: { controls: { disable: true } },
+  render: () => <Footer device="desktop" condensed={false} />,
+}
+
+// ── Desktop Condensed ─────────────────────────────────────────────────────────
+export const DesktopCondensed: Story = {
+  name: "Desktop / Condensed",
+  parameters: { controls: { disable: true } },
+  render: () => <Footer device="desktop" condensed />,
+}
+
+// ── Mobile Full ───────────────────────────────────────────────────────────────
+export const MobileFull: Story = {
+  name: "Mobile / Full",
+  parameters: { controls: { disable: true } },
+  render: () => <Footer device="mobile" condensed={false} />,
+}
+
+// ── Mobile Condensed ──────────────────────────────────────────────────────────
+export const MobileCondensed: Story = {
+  name: "Mobile / Condensed",
+  parameters: { controls: { disable: true } },
+  render: () => <Footer device="mobile" condensed />,
+}
+
+// ── Custom Links ──────────────────────────────────────────────────────────────
+export const CustomLinks: Story = {
+  name: "Custom Links",
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <Footer
+      device="desktop"
+      links={[
+        { label: "About us", href: "#" },
+        { label: "Help centre", href: "#" },
+        { label: "Accessibility", href: "#" },
+        { label: "Privacy", href: "#" },
+        { label: "Terms of use", href: "#" },
+      ]}
+    />
+  ),
 }
