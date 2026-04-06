@@ -5,7 +5,7 @@ import { DropdownOption } from "./DropdownOption"
 import { DropdownTrigger } from "./DropdownTrigger"
 import type { DropdownMenuSize } from "./DropdownMenu"
 import type { DropdownOptionSize, DropdownOptionProps } from "./DropdownOption"
-import type { DropdownTriggerColour, DropdownTriggerSize } from "./DropdownTrigger"
+import type { DropdownTriggerColour } from "./DropdownTrigger"
 
 const meta: Meta<typeof DropdownMenu> = {
   title: "Navigation/Dropdown",
@@ -237,66 +237,6 @@ export const OptionStates: Story = {
       ))}
     </div>
   ),
-}
-
-// ── Trigger — all states × colours × sizes ───────────────────────────────────
-export const TriggerStates: Story = {
-  name: "Trigger / All States",
-  parameters: { controls: { disable: true } },
-  render: () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      {(["brand", "neutral"] as const).map((colour) => (
-        <div key={colour} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#7C8094", textTransform: "capitalize" }}>{colour}</span>
-          <div style={{ display: "flex", gap: 32, alignItems: "center", flexWrap: "wrap" }}>
-            {(["md", "sm", "xs"] as const).map((size) => (
-              <div key={size} style={{ display: "flex", gap: 24, alignItems: "center" }}>
-                <DropdownTrigger colour={colour} size={size}>Default</DropdownTrigger>
-                <DropdownTrigger colour={colour} size={size} isOpen>Selected</DropdownTrigger>
-                <DropdownTrigger colour={colour} size={size} showBadge badgeCount={3}>With badge</DropdownTrigger>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  ),
-}
-
-// ── Trigger Playground ────────────────────────────────────────────────────────
-export const TriggerPlayground: Story = {
-  name: "Trigger / Playground",
-  parameters: { controls: { disable: true } },
-  render: () => {
-    const [colour, setColour] = useState<DropdownTriggerColour>("brand")
-    const [size, setSize]     = useState<DropdownTriggerSize>("md")
-    const [isOpen, setIsOpen] = useState(false)
-    const [badge, setBadge]   = useState(false)
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "center", fontFamily: "Inter, sans-serif" }}>
-        <div style={{ display: "flex", gap: 12, fontSize: 13 }}>
-          {(["brand", "neutral"] as const).map((c) => (
-            <label key={c} style={{ display: "flex", gap: 4, cursor: "pointer" }}>
-              <input type="radio" checked={colour === c} onChange={() => setColour(c)} /> {c}
-            </label>
-          ))}
-          <span style={{ width: 1, background: "#E2E7E9" }} />
-          {(["md", "sm", "xs"] as const).map((s) => (
-            <label key={s} style={{ display: "flex", gap: 4, cursor: "pointer" }}>
-              <input type="radio" checked={size === s} onChange={() => setSize(s)} /> {s}
-            </label>
-          ))}
-          <span style={{ width: 1, background: "#E2E7E9" }} />
-          <label style={{ display: "flex", gap: 4, cursor: "pointer" }}>
-            <input type="checkbox" checked={badge} onChange={(e) => setBadge(e.target.checked)} /> badge
-          </label>
-        </div>
-        <DropdownTrigger colour={colour} size={size} isOpen={isOpen} showBadge={badge} badgeCount={3} onClick={() => setIsOpen((o) => !o)}>
-          Filter by
-        </DropdownTrigger>
-      </div>
-    )
-  },
 }
 
 // ── Live Demo — Trigger + Menu composed ───────────────────────────────────────
