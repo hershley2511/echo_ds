@@ -37,7 +37,7 @@ interface ColourConfig {
 const colours: Record<AvatarColour, ColourConfig> = {
   strong:  { bg: "avatar.strong.default",  bgHover: "avatar.strong.hover",  bgActive: "avatar.strong.active",  ring: "avatar.strong.ring",   text: "content.dark.strong"        },
   neutral: { bg: "avatar.neutral.default", bgHover: "avatar.neutral.hover", bgActive: "avatar.neutral.active", ring: "avatar.neutral.ring",  text: "content.dark.strong"        },
-  subtle:  { bg: "avatar.subtle.default",  bgHover: "avatar.subtle.hover",  bgActive: "avatar.subtle.active",  ring: "avatar.subtle.ring",   text: "content.light.brand-strong" },
+  subtle:  { bg: "avatar.subtle.default",  bgHover: "avatar.subtle.hover",  bgActive: "avatar.subtle.active",  ring: "avatar.subtle.ring",   text: "content.light.brand-subtle" },
   // Figma: default=brand/secondary/50 (#F6F7FF), hover=brand/primary/100 (#DDFBC6), active=brand/secondary/100 (#F0F1F9)
   mix:     { bg: "brand.secondary.50",     bgHover: "green.100",            bgActive: "slate.100",             ring: "focus.neutral-subtle", text: "content.light.brand-subtle" },
 }

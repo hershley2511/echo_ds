@@ -60,15 +60,15 @@ export const FilterDropdown = forwardRef<HTMLDivElement, FilterDropdownProps>(fu
           gap="6px"
           h="36px"
           px="12px"
-          bg={hasSelection ? "green.50" : "white"}
+          bg={hasSelection ? "interaction.muted.default" : "interaction.neutral.default"}
           border="1px solid"
-          borderColor={hasSelection ? "green.800" : "grey.100"}
+          borderColor={hasSelection ? "interaction.muted.default" : "interaction.neutral.default"}
           borderRadius="8px"
           fontSize="13px"
           fontWeight="500"
-          color={hasSelection ? "green.800" : "slate.700"}
+          color={hasSelection ? "content.light.brand-strong" : "content.light.default"}
           cursor="pointer"
-          _hover={{ borderColor: hasSelection ? "green.800" : "slate.700", bg: hasSelection ? "green.50" : "slate.100" }}
+          _hover={{ bg: hasSelection ? "interaction.muted.hover" : "interaction.neutral.hover", borderColor: hasSelection ? "interaction.muted.hover" : "interaction.neutral.hover" }}
           onClick={() => setIsOpen((o) => !o)}
         >
           {label}
@@ -79,8 +79,8 @@ export const FilterDropdown = forwardRef<HTMLDivElement, FilterDropdownProps>(fu
               justifyContent="center"
               w="18px"
               h="18px"
-              bg="green.800"
-              color="white"
+              bg="content.light.brand-strong"
+              color="content.dark.strong"
               borderRadius="full"
               fontSize="11px"
               fontWeight="700"
@@ -119,7 +119,7 @@ export const FilterDropdown = forwardRef<HTMLDivElement, FilterDropdownProps>(fu
                   py="7px"
                   borderRadius="6px"
                   cursor="pointer"
-                  _hover={{ bg: "slate.100" }}
+                  _hover={{ bg: "interaction.neutral.default" }}
                   onMouseDown={() => toggle(opt.value)}
                 >
                   {isMulti && (
@@ -128,8 +128,8 @@ export const FilterDropdown = forwardRef<HTMLDivElement, FilterDropdownProps>(fu
                       h="14px"
                       borderRadius="3px"
                       border="2px solid"
-                      borderColor={isSelected ? "green.800" : "grey.100"}
-                      bg={isSelected ? "green.800" : "white"}
+                      borderColor={isSelected ? "interaction.main.default" : "grey.100"}
+                      bg={isSelected ? "interaction.main.default" : "white"}
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
@@ -138,9 +138,9 @@ export const FilterDropdown = forwardRef<HTMLDivElement, FilterDropdownProps>(fu
                       {isSelected && <chakra.span color="white" fontSize="9px" fontWeight="700">✓</chakra.span>}
                     </chakra.div>
                   )}
-                  <chakra.span fontSize="13px" color="slate.800" flex={1}>{opt.label}</chakra.span>
+                  <chakra.span fontSize="13px" color="content.light.default" flex={1}>{opt.label}</chakra.span>
                   {opt.count !== undefined && (
-                    <chakra.span fontSize="11px" color="grey.400">{opt.count}</chakra.span>
+                    <chakra.span fontSize="11px" color="content.light.subtle">{opt.count}</chakra.span>
                   )}
                 </chakra.li>
               )
@@ -154,8 +154,8 @@ export const FilterDropdown = forwardRef<HTMLDivElement, FilterDropdownProps>(fu
                   borderRadius="6px"
                   cursor="pointer"
                   fontSize="13px"
-                  color="red.500"
-                  _hover={{ bg: "#FFF0EB" }}
+                  color="interaction.critical.default"
+                  _hover={{ bg: "feedback.critical.subtle" }}
                   onMouseDown={clear}
                 >
                   Clear filter

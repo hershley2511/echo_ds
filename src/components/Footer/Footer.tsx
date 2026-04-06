@@ -137,7 +137,7 @@ function SocialButtons() {
 
 // ── Divider ───────────────────────────────────────────────────────────────────
 function Divider() {
-  return <chakra.div w="full" h="1px" bg="border.subtle" flexShrink={0} />
+  return <chakra.div w="full" h="1px" bg="brand.secondary.200" flexShrink={0} />
 }
 
 // ── Default links ─────────────────────────────────────────────────────────────
