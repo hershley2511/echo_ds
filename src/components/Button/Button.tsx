@@ -47,7 +47,7 @@ function s(
   }
 }
 
-const styles: StyleMap = {
+export const buttonStyles: StyleMap = {
   brand: {
     solid:   s(["interaction.main.default",    "content.dark.strong",        "interaction.main.default"   ], ["interaction.main.hover",    "interaction.main.hover"   ], ["interaction.main.active",    "interaction.main.active"   ]),
     outline: s(["transparent",                 "interaction.main.default",   "interaction.main.default"   ], ["brand.primary.50",          "interaction.main.default" ], ["brand.primary.100",          "interaction.main.default"  ]),
@@ -146,7 +146,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 
   const { bg, color, borderColor } = isInert
     ? { bg: "interaction.support.disabled-bg", color: "interaction.support.disabled", borderColor: "interaction.support.disabled-bg" }
-    : styles[colorScheme][variant][stateKey]
+    : buttonStyles[colorScheme][variant][stateKey]
 
   const { gap, ...sizeStyles } = sizes[size]
 
