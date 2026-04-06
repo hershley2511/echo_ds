@@ -70,8 +70,8 @@ export const buttonStyles: StyleMap = {
   },
   neutral: {
     solid:   s(["interaction.neutral.default", "content.light.default",      "interaction.neutral.default"], ["interaction.neutral.hover", "interaction.neutral.hover"], ["interaction.neutral.active", "interaction.neutral.active"]),
-    outline: s(["transparent",                 "content.light.medium",       "border.subtle"              ], ["brand.secondary.50",        "border.subtle"            ], ["interaction.neutral.default","border.subtle"              ]),
-    clear:   s(["transparent",                 "content.light.medium",       "transparent"                ], ["interaction.neutral.default","transparent"             ], ["interaction.neutral.hover",  "transparent"               ]),
+    outline: s(["transparent",                 "content.light.default",      "focus.neutral-default"      ], ["rgba(124,128,148,0.1)",     "focus.neutral-default"    ], ["rgba(124,128,148,0.2)",      "focus.neutral-default"      ]),
+    clear:   s(["transparent",                 "content.light.default",      "transparent"                ], ["rgba(124,128,148,0.1)",      "transparent"             ], ["rgba(124,128,148,0.2)",      "transparent"               ]),
   },
   inverse: {
     solid:   s(["content.dark.strong",         "interaction.main.default",   "content.dark.strong"        ], ["brand.secondary.100",       "brand.secondary.100"      ], ["brand.secondary.200",        "brand.secondary.200"       ]),
