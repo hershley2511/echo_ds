@@ -50,13 +50,13 @@ function s(
 export const buttonStyles: StyleMap = {
   brand: {
     solid:   s(["interaction.main.default",    "content.dark.strong",        "interaction.main.default"   ], ["interaction.main.hover",    "interaction.main.hover"   ], ["interaction.main.active",    "interaction.main.active"   ]),
-    outline: s(["transparent",                 "interaction.main.default",   "interaction.main.default"   ], ["brand.primary.50",          "interaction.main.default" ], ["brand.primary.100",          "interaction.main.default"  ]),
-    clear:   s(["transparent",                 "interaction.main.default",   "transparent"                ], ["brand.primary.50",          "transparent"              ], ["brand.primary.100",          "transparent"               ]),
+    outline: s(["transparent",                 "interaction.main.default",   "interaction.main.default"   ], ["rgba(149,229,161,0.2)",     "focus.brand-default"      ], ["rgba(90,199,146,0.2)",       "rgba(90,199,146,0.2)"      ]),
+    clear:   s(["transparent",                 "interaction.main.default",   "transparent"                ], ["rgba(149,229,161,0.2)",     "transparent"              ], ["rgba(90,199,146,0.2)",       "transparent"               ]),
   },
   subtle: {
     solid:   s(["interaction.muted.default",   "content.light.brand-strong", "interaction.muted.default"  ], ["interaction.muted.hover",   "interaction.muted.hover"  ], ["interaction.muted.active",   "interaction.muted.active"  ]),
-    outline: s(["transparent",                 "content.light.brand-strong", "interaction.muted.hover"    ], ["interaction.muted.default", "interaction.muted.hover"  ], ["interaction.muted.hover",    "interaction.muted.hover"   ]),
-    clear:   s(["transparent",                 "content.light.brand-strong", "transparent"                ], ["interaction.muted.default", "transparent"              ], ["interaction.muted.hover",    "transparent"               ]),
+    outline: s(["transparent",                 "content.light.brand-strong", "focus.neutral-subtle"       ], ["rgba(149,229,161,0.2)",     "focus.brand-default"      ], ["transparent",                "focus.brand-default"       ]),
+    clear:   s(["transparent",                 "content.light.default",      "transparent"                ], ["rgba(149,229,161,0.2)",     "transparent"              ], ["transparent",                "transparent"               ]),
   },
   success: {
     solid:   s(["interaction.success.default", "content.dark.strong",        "interaction.success.default"], ["interaction.success.hover", "interaction.success.hover"], ["interaction.success.active", "interaction.success.active"]),
@@ -65,7 +65,7 @@ export const buttonStyles: StyleMap = {
   },
   critical: {
     solid:   s(["interaction.critical.default","content.dark.strong",        "interaction.critical.default"], ["interaction.critical.hover","interaction.critical.hover"], ["interaction.critical.active","interaction.critical.active"]),
-    outline: s(["transparent",                 "interaction.critical.default","interaction.critical.default"], ["rgba(200,79,37,0.1)", "interaction.critical.default"], ["rgba(200,79,37,0.2)", "interaction.critical.default"]),
+    outline: s(["transparent",                 "interaction.critical.default","interaction.critical.default"], ["rgba(200,79,37,0.1)", "interaction.critical.default"], ["rgba(200,79,37,0.2)", "rgba(200,79,37,0.2)"         ]),
     clear:   s(["transparent",                 "interaction.critical.default","transparent"                ], ["rgba(200,79,37,0.1)",  "transparent"              ], ["rgba(200,79,37,0.2)",  "transparent"               ]),
   },
   neutral: {
@@ -76,7 +76,7 @@ export const buttonStyles: StyleMap = {
   inverse: {
     solid:   s(["content.dark.strong",         "interaction.main.default",   "content.dark.strong"        ], ["brand.secondary.100",       "brand.secondary.100"      ], ["brand.secondary.200",        "brand.secondary.200"       ]),
     outline: s(["transparent",                 "content.dark.strong",        "content.dark.strong"        ], ["rgba(255,255,255,0.12)",    "content.dark.strong"      ], ["rgba(255,255,255,0.22)",     "content.dark.strong"       ]),
-    clear:   s(["transparent",                 "content.dark.strong",        "transparent"                ], ["rgba(255,255,255,0.12)",    "transparent"              ], ["rgba(255,255,255,0.22)",     "transparent"               ]),
+    clear:   s(["transparent",                 "content.dark.strong",        "transparent"                ], ["rgba(124,128,148,0.1)",     "transparent"              ], ["rgba(124,128,148,0.2)",      "transparent"               ]),
   },
   warning: {
     solid:   s(["feedback.warning.default",    "content.light.default",      "feedback.warning.default"   ], ["yellow.300",                "yellow.300"               ], ["yellow.500",                 "yellow.500"                ]),
